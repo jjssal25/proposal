@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>남지선 작업물</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1814;
+      --ink-muted: #6b665e;
+      --ink-faint: #b0aa9e;
+      --paper: #f7f4ef;
+      --paper-warm: #ede9e2;
+      --paper-card: #faf8f5;
+      --accent: #8b5c2a;
+      --accent-soft: #d4a574;
+      --line: rgba(26,24,20,0.12);
+      --radius: 3px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      min-height: 100vh;
+      cursor: none;
+    }
+
+    /* custom cursor */
+    .cursor {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.2s, height 0.2s, opacity 0.2s;
+    }
+    .cursor-ring {
+      width: 28px; height: 28px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.18s ease, width 0.25s, height 0.25s, opacity 0.25s;
+      opacity: 0.5;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    /* ── layout ── */
+    .wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── header ── */
+    header {
+      padding: 5rem 0 3rem;
+      border-bottom: 0.5px solid var(--line);
+    }
+
+    .header-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    .header-meta::before {
+      content: '';
+      display: inline-block;
+      width: 24px; height: 1px;
+      background: var(--accent-soft);
+    }
+
+    h1 {
+      font-family: 'Noto Serif KR', serif;
+      font-weight: 300;
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+    }
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+      position: relative;
+    }
+    h1 em::after {
+      content: '';
+      position: absolute;
+      bottom: 4px; left: 0; right: 0;
+      height: 1px;
+      background: var(--accent-soft);
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: underline-in 0.8s 0.6s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+    @keyframes underline-in { to { transform: scaleX(1); } }
+
+    .header-desc {
+      font-size: 0.95rem;
+      color: var(--ink-muted);
+      max-width: 480px;
+      line-height: 1.8;
+    }
+
+    /* ── nav ── */
+    .site-nav {
+      padding: 1.25rem 0;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      border-bottom: 0.5px solid var(--line);
+    }
+    .site-nav a {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink-muted);
+      transition: color 0.2s;
+    }
+    .site-nav a:hover { color: var(--accent); }
+    .nav-dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--ink-faint);
+      flex-shrink: 0;
+    }
+
+    /* ── section title ── */
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding-top: 4rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 0.5px;
+      background: var(--line);
+    }
+
+    /* ── works grid ── */
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+      padding-bottom: 5rem;
+    }
+
+    /* ── work card ── */
+    .work-card {
+      background: var(--paper-card);
+      border: 0.5px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), border-color 0.25s;
+      position: relative;
+    }
+    .work-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-soft);
+    }
+    .work-card.placeholder {
+      opacity: 0.45;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .card-thumb {
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: var(--paper-warm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .card-thumb-pattern {
+      position: absolute; inset: 0;
+      opacity: 0.35;
+    }
+    .card-thumb-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--ink-faint);
+      position: relative;
+      z-index: 1;
+    }
+    /* 첫 번째 카드(인덱스 페이지 자체) 썸네일 */
+    .card-thumb.self {
+      background: #e8e2d8;
+    }
+
+    .card-body {
+      padding: 1.25rem 1.25rem 1.5rem;
+    }
+    .card-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .card-title {
+      font-family: 'Noto Serif KR', serif;
+      font-weight: 400;
+      font-size: 1.05rem;
+      line-height: 1.4;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+      line-height: 1.6;
+    }
+    .card-arrow {
+      position: absolute;
+      bottom: 1.25rem; right: 1.25rem;
+      font-size: 1rem;
+      color: var(--accent-soft);
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .work-card:hover .card-arrow {
+      opacity: 1;
+      transform: translate(2px, -2px);
+    }
+
+    /* ── about strip ── */
+    .about-strip {
+      border-top: 0.5px solid var(--line);
+      border-bottom: 0.5px solid var(--line);
+      padding: 3rem 0;
+      margin-bottom: 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
+    @media (max-width: 600px) {
+      .about-strip { grid-template-columns: 1fr; gap: 1.5rem; }
+    }
+    .about-item-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 0.5rem;
+    }
+    .about-item-value {
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+      line-height: 1.7;
+    }
+    .about-item-value strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* ── footer ── */
+    footer {
+      padding: 2rem 0 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      border-top: 0.5px solid var(--line);
+    }
+    @media (max-width: 600px) {
+      footer { flex-direction: column; align-items: flex-start; }
+    }
+    .footer-name {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 0.85rem;
+      color: var(--ink-muted);
+    }
+    .footer-mono {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+    }
+
+    /* ── animations ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.7s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: none; }
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.35s; }
+    .delay-4 { animation-delay: 0.5s; }
+    .delay-5 { animation-delay: 0.65s; }
+
+    /* thumb svg patterns */
+    .pattern-dots circle { fill: var(--ink-faint); }
+    .pattern-lines line { stroke: var(--ink-faint); stroke-width: 0.5; }
+    .pattern-grid line { stroke: var(--ink-faint); stroke-width: 0.4; }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--paper); }
+    ::-webkit-scrollbar-thumb { background: var(--ink-faint); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursor-ring"></div>
+
+  <div class="wrap">
+
+    <!-- header -->
+    <header class="fade-up">
+      <div class="header-meta">
+        <span>Portfolio</span>
+        <span>Design &amp; Frontend</span>
+      </div>
+      <h1>남<em>지선</em><br>작업물</h1>
+      <p class="header-desc">
+        디자인과 코드 사이 어딘가.<br>
+        직접 만들고, 고치고, 쌓아온 것들을 여기 모아둡니다.
+      </p>
+    </header>
+
+    <!-- nav -->
+    <nav class="site-nav fade-up delay-1">
+      <a href="#works">Works</a>
+      <div class="nav-dot"></div>
+      <a href="#about">About</a>
+    </nav>
+
+    <!-- about -->
+    <section id="about">
+      <div class="section-label fade-up delay-2">About</div>
+      <div class="about-strip fade-up delay-3">
+        <div>
+          <div class="about-item-label">소개</div>
+          <div class="about-item-value">
+            이커머스 플랫폼에서 <strong>PM</strong>으로 일하며<br>
+            데이터와 디자인, 두 가지를 함께 다룹니다.<br>
+            이 사이트엔 직접 작업한 HTML/디자인 결과물들이 담깁니다.
+          </div>
+        </div>
+        <div>
+          <div class="about-item-label">관심 분야</div>
+          <div class="about-item-value">
+            UI 디자인 &nbsp;·&nbsp; 데이터 시각화<br>
+            웹 인터랙션 &nbsp;·&nbsp; 타이포그래피
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- works -->
+    <section id="works">
+      <div class="section-label fade-up delay-3">Works</div>
+
+      <div class="works-grid fade-up delay-4">
+
+        <!-- 작업물 추가 예시 카드 (실제 작업물로 교체하세요) -->
+        <!-- ↓↓↓ 여기서부터 작업물 카드를 복사해서 추가하면 됩니다 ↓↓↓ -->
+
+        <!-- [작업물 카드 템플릿]
+        <a class="work-card" href="파일명.html">
+          <div class="card-thumb">
+            <svg class="card-thumb-pattern" ...></svg>
+            <span class="card-thumb-label">미리보기 없음</span>
+          </div>
+          <div class="card-body">
+            <div class="card-tag">카테고리</div>
+            <div class="card-title">작업물 제목</div>
+            <div class="card-desc">간단한 설명</div>
+          </div>
+          <span class="card-arrow">↗</span>
+        </a>
+        -->
+
+        <!-- placeholder 카드 3개 (작업물 추가 전 자리 표시용) -->
+        <div class="work-card placeholder">
+          <div class="card-thumb">
+            <svg class="card-thumb-pattern pattern-dots" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+              <defs><pattern id="d1" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="8" cy="8" r="1"/></pattern></defs>
+              <rect width="320" height="200" fill="url(#d1)"/>
+            </svg>
+            <span class="card-thumb-label">coming soon</span>
+          </div>
+          <div class="card-body">
+            <div class="card-tag">작업물 01</div>
+            <div class="card-title">곧 올라올 예정</div>
+            <div class="card-desc">첫 번째 작업물이 여기에 추가됩니다.</div>
+          </div>
+        </div>
+
+        <div class="work-card placeholder">
+          <div class="card-thumb">
+            <svg class="card-thumb-pattern pattern-lines" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+              <defs><pattern id="l1" x="0" y="0" width="14" height="14" patternUnits="userSpaceOnUse"><line x1="0" y1="14" x2="14" y2="0"/></pattern></defs>
+              <rect width="320" height="200" fill="url(#l1)"/>
+            </svg>
+            <span class="card-thumb-label">coming soon</span>
+          </div>
+          <div class="card-body">
+            <div class="card-tag">작업물 02</div>
+            <div class="card-title">곧 올라올 예정</div>
+            <div class="card-desc">두 번째 작업물이 여기에 추가됩니다.</div>
+          </div>
+        </div>
+
+        <div class="work-card placeholder">
+          <div class="card-thumb">
+            <svg class="card-thumb-pattern pattern-grid" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="g1" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <line x1="20" y1="0" x2="20" y2="20"/>
+                  <line x1="0" y1="20" x2="20" y2="20"/>
+                </pattern>
+              </defs>
+              <rect width="320" height="200" fill="url(#g1)"/>
+            </svg>
+            <span class="card-thumb-label">coming soon</span>
+          </div>
+          <div class="card-body">
+            <div class="card-tag">작업물 03</div>
+            <div class="card-title">곧 올라올 예정</div>
+            <div class="card-desc">세 번째 작업물이 여기에 추가됩니다.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- footer -->
+    <footer class="fade-up delay-5">
+      <span class="footer-name">남지선 포트폴리오</span>
+      <span class="footer-mono">Updated <span id="updated-year"></span></span>
+    </footer>
+
+  </div><!-- /wrap -->
+
+  <script>
+    // custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+      setTimeout(() => {
+        ring.style.left = e.clientX + 'px';
+        ring.style.top = e.clientY + 'px';
+      }, 60);
+    });
+    document.querySelectorAll('a, .work-card:not(.placeholder)').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '14px';
+        cursor.style.height = '14px';
+        ring.style.width = '44px';
+        ring.style.height = '44px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '8px';
+        cursor.style.height = '8px';
+        ring.style.width = '28px';
+        ring.style.height = '28px';
+      });
+    });
+
+    // 연도 자동 업데이트
+    document.getElementById('updated-year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
