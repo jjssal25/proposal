@@ -1,0 +1,745 @@
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공급사 관리지표 통계</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:#1a1a1a;background:#f4f4f4}
+.page-header{background:#fff;border-bottom:1px solid #e0e0e0;padding:0 2rem;height:52px;display:flex;align-items:center;gap:8px}
+.page-header h1{font-size:16px;font-weight:600}
+.page-header span{font-size:12px;color:#888}
+.container{max-width:1500px;margin:0 auto;padding:1.5rem 2rem}
+.filter-box{background:#fff;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;margin-bottom:12px}
+.frow{display:flex;align-items:stretch;border-bottom:1px solid #f0f0f0}
+.frow:last-child{border-bottom:none}
+.flabel{width:120px;min-width:120px;background:#fafafa;padding:8px 14px;font-size:11px;font-weight:600;color:#555;display:flex;align-items:center;border-right:1px solid #f0f0f0;line-height:1.4}
+.fval{flex:1;padding:7px 14px;display:flex;align-items:center;flex-wrap:wrap;gap:7px;background:#fff}
+input[type=date]{height:28px;border:1px solid #d4d4d4;border-radius:5px;padding:0 8px;font-size:11px;color:#1a1a1a;background:#fff;outline:none}
+input[type=date]:focus{border-color:#4A7CF7}
+select{height:28px;border:1px solid #d4d4d4;border-radius:5px;padding:0 8px;font-size:11px;color:#1a1a1a;background:#fff;outline:none}
+select:focus{border-color:#4A7CF7}
+.req{font-size:10px;padding:1px 5px;border-radius:3px;background:#FEE2E2;color:#B91C1C;margin-left:4px;font-weight:500}
+.radio-group{display:flex;flex-wrap:wrap;gap:12px}
+.radio-group label{display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer}
+.radio-group input[type=radio]{accent-color:#4A7CF7;width:13px;height:13px}
+.date-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dchip{height:24px;padding:0 9px;border:1px solid #d4d4d4;border-radius:4px;font-size:11px;cursor:pointer;background:#fff;color:#666;display:inline-flex;align-items:center}
+.dchip.on{background:#EFF6FF;border-color:#93C5FD;color:#1D4ED8;font-weight:600}
+.dchip:hover{background:#f5f5f5}
+
+/* 공급사/제휴몰 선택 버튼 */
+.select-btn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 14px;background:#1a1a1a;color:#fff;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.select-btn:hover{background:#333}
+.select-btn svg{flex-shrink:0}
+.selected-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.sel-tag{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;background:#f0f0f0;border-radius:4px;font-size:11px;color:#333}
+.sel-tag .rm{cursor:pointer;color:#999;font-size:13px;line-height:1;margin-left:2px}
+.sel-tag .rm:hover{color:#333}
+.sel-placeholder{font-size:11px;color:#aaa}
+
+/* 모달 오버레이 */
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:10px;width:420px;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.18)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #f0f0f0;background:#fafafa}
+.modal-head h3{font-size:14px;font-weight:600}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#888;line-height:1;padding:0 4px}
+.modal-close:hover{color:#333}
+.modal-search{padding:10px 14px;border-bottom:1px solid #f0f0f0}
+.modal-search input{width:100%;height:30px;border:1px solid #d4d4d4;border-radius:5px;padding:0 10px;font-size:12px;outline:none}
+.modal-search input:focus{border-color:#4A7CF7}
+.modal-list{flex:1;overflow-y:auto;padding:8px 0}
+.modal-item{display:flex;align-items:center;gap:8px;padding:7px 18px;cursor:pointer;font-size:12px}
+.modal-item:hover{background:#f5f5f5}
+.modal-item input[type=checkbox]{accent-color:#1a1a1a;width:14px;height:14px;cursor:pointer}
+.modal-item.all-item{border-bottom:1px solid #f0f0f0;font-weight:600;margin-bottom:2px}
+.modal-foot{padding:10px 14px;border-top:1px solid #f0f0f0;display:flex;gap:8px;justify-content:flex-end}
+.modal-confirm{height:30px;padding:0 20px;background:#1a1a1a;color:#fff;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer}
+.modal-confirm:hover{background:#333}
+.modal-cancel{height:30px;padding:0 14px;background:#fff;color:#555;border:1px solid #d4d4d4;border-radius:5px;font-size:12px;cursor:pointer}
+.modal-cancel:hover{background:#f5f5f5}
+
+.mchip{height:24px;padding:0 9px;border:1px solid #d4d4d4;border-radius:4px;font-size:11px;cursor:pointer;background:#fff;color:#333;display:inline-flex;align-items:center}
+.mchip.on{background:#EFF6FF;border-color:#93C5FD;color:#1D4ED8;font-weight:600}
+.mchip:hover{background:#f5f5f5}
+.cb-row{display:flex;align-items:center;gap:6px;font-size:11px;color:#555}
+.cb-row input{accent-color:#4A7CF7;width:13px;height:13px;cursor:pointer}
+.cb-row.disabled{opacity:.4;pointer-events:none}
+.val-msg{display:none;font-size:11px;color:#B91C1C;background:#FEF2F2;border:1px solid #FECACA;border-radius:5px;padding:6px 12px;margin:0 14px 10px}
+.val-msg.show{display:block}
+.btn-row{display:flex;gap:8px;padding:10px 14px;background:#fafafa;border-top:1px solid #f0f0f0;justify-content:center}
+.btn-search{height:30px;padding:0 22px;background:#1a1a1a;color:#fff;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer}
+.btn-search:hover{background:#333}
+.btn-reset{height:30px;padding:0 16px;background:#fff;color:#555;border:1px solid #d4d4d4;border-radius:5px;font-size:12px;cursor:pointer}
+.btn-reset:hover{background:#f5f5f5}
+.result-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.result-bar .ri{font-size:12px;color:#666}
+.result-bar .ri strong{color:#111;font-weight:600}
+.btn-excel{height:30px;padding:0 14px;background:#fff;color:#166534;border:1px solid #BBF7D0;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.btn-excel:hover{background:#F0FDF4}
+.tbl-wrap{background:#fff;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11px;min-width:1200px}
+thead th{padding:7px 8px;text-align:center;font-weight:600;font-size:10px;color:#444;background:#fafafa;white-space:nowrap;border-right:1px solid #ebebeb;border-bottom:1px solid #e0e0e0;line-height:1.4;vertical-align:bottom}
+thead th:last-child{border-right:none}
+thead th.left{text-align:left}
+thead th.g-blue{background:#EFF6FF;color:#1D4ED8}
+thead th.g-amber{background:#FFFBEB;color:#92400E}
+thead th.g-red{background:#FEF2F2;color:#991B1B}
+thead th.g-teal{background:#F0FDF4;color:#14532D}
+thead th.g-purple{background:#F5F3FF;color:#4C1D95}
+thead th.dl{border-left:2px solid #d0d0d0}
+tbody tr{border-bottom:1px solid #f0f0f0}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#fafafa}
+td{padding:8px;text-align:center;white-space:nowrap;border-right:1px solid #f0f0f0;vertical-align:middle;color:#1a1a1a}
+td:last-child{border-right:none}
+td.left{text-align:left}
+td.dl{border-left:2px solid #e8e8e8}
+td.warn{color:#B45309;font-weight:500}
+td.danger{color:#B91C1C;font-weight:500}
+td.ok{color:#166534}
+td.muted{color:#bbb}
+.badge-md{display:inline-block;font-size:10px;padding:2px 7px;border-radius:3px;background:#EFF6FF;color:#1D4ED8;font-weight:500}
+tfoot tr{border-top:2px solid #d0d0d0}
+tfoot td{padding:8px;font-weight:600;background:#fafafa;text-align:center;border-right:1px solid #ebebeb;color:#1a1a1a}
+tfoot td.left{text-align:left;color:#666}
+.note{font-size:10px;color:#aaa;margin-top:8px;line-height:1.8}
+.hint{font-size:10px;color:#aaa}
+</style>
+</head>
+<body>
+
+<!-- 공급사 선택 모달 -->
+<div class="modal-overlay" id="modal-supplier">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>공급사 선택</h3>
+      <button class="modal-close" onclick="closeModal('supplier')">×</button>
+    </div>
+    <div class="modal-search">
+      <input type="text" id="search-supplier" placeholder="공급사명 검색..." oninput="filterModal('supplier')">
+    </div>
+    <div class="modal-list" id="list-supplier">
+      <div class="modal-item all-item" onclick="toggleAllModal('supplier')">
+        <input type="checkbox" id="chk-supplier-all"> <label for="chk-supplier-all" style="cursor:pointer">전체 선택</label>
+      </div>
+    <div class="modal-item" data-val="셀러허브몰"><input type="checkbox" id="chk-supplier-셀러허브몰"><label for="chk-supplier-셀러허브몰" style="cursor: pointer;">셀러허브몰</label></div><div class="modal-item" data-val="ABC패션"><input type="checkbox" id="chk-supplier-ABC패션"><label for="chk-supplier-ABC패션" style="cursor: pointer;">ABC패션</label></div><div class="modal-item" data-val="드림생활"><input type="checkbox" id="chk-supplier-드림생활"><label for="chk-supplier-드림생활" style="cursor: pointer;">드림생활</label></div><div class="modal-item" data-val="그린홈"><input type="checkbox" id="chk-supplier-그린홈"><label for="chk-supplier-그린홈" style="cursor: pointer;">그린홈</label></div><div class="modal-item" data-val="스타일원"><input type="checkbox" id="chk-supplier-스타일원"><label for="chk-supplier-스타일원" style="cursor: pointer;">스타일원</label></div><div class="modal-item" data-val="패션플러스"><input type="checkbox" id="chk-supplier-패션플러스"><label for="chk-supplier-패션플러스" style="cursor: pointer;">패션플러스</label></div><div class="modal-item" data-val="리빙하우스"><input type="checkbox" id="chk-supplier-리빙하우스"><label for="chk-supplier-리빙하우스" style="cursor: pointer;">리빙하우스</label></div><div class="modal-item" data-val="스포츠타운"><input type="checkbox" id="chk-supplier-스포츠타운"><label for="chk-supplier-스포츠타운" style="cursor: pointer;">스포츠타운</label></div></div>
+    <div class="modal-foot">
+      <button class="modal-cancel" onclick="closeModal('supplier')">취소</button>
+      <button class="modal-confirm" onclick="confirmModal('supplier')">적용</button>
+    </div>
+  </div>
+</div>
+
+<!-- 제휴몰 선택 모달 -->
+<div class="modal-overlay" id="modal-mall">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>제휴몰 선택</h3>
+      <button class="modal-close" onclick="closeModal('mall')">×</button>
+    </div>
+    <div class="modal-search">
+      <input type="text" id="search-mall" placeholder="제휴몰명 검색..." oninput="filterModal('mall')">
+    </div>
+    <div class="modal-list" id="list-mall">
+      <div class="modal-item all-item" onclick="toggleAllModal('mall')">
+        <input type="checkbox" id="chk-mall-all"> <label for="chk-mall-all" style="cursor:pointer">전체 선택</label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="modal-cancel" onclick="closeModal('mall')">취소</button>
+      <button class="modal-confirm" onclick="confirmModal('mall')">적용</button>
+    </div>
+  </div>
+</div>
+
+<header class="page-header">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+  <h1>공급사 관리지표 통계</h1>
+  <span>공급사 수행 지표를 조회합니다.</span>
+</header>
+
+<div class="container">
+  <div class="filter-box">
+
+    <!-- 공급사 -->
+    <div class="frow">
+      <div class="flabel">공급사</div>
+      <div class="fval">
+        <button class="select-btn" onclick="openModal('supplier')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          공급사
+        </button>
+        <div class="selected-tags" id="tags-supplier">
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- 제휴몰 -->
+    <div class="frow">
+      <div class="flabel">제휴몰</div>
+      <div class="fval">
+        <button class="select-btn" onclick="openModal('mall')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          제휴몰
+        </button>
+        <div class="selected-tags" id="tags-mall">
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- 메인담당MD -->
+    <div class="frow">
+      <div class="flabel">메인 담당MD</div>
+      <div class="fval">
+        <select id="sel-md" style="width:160px">
+          <option value="">메인 담당MD</option>
+          <option>김지선</option>
+          <option>이민준</option>
+          <option>박서연</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 매출 유형 -->
+    <div class="frow">
+      <div class="flabel">매출 유형</div>
+      <div class="fval">
+        <div class="radio-group">
+          <label><input type="radio" name="saletype" value="all" checked="">공급사별</label>
+          <label><input type="radio" name="saletype" value="brand"> 공급사/브랜드별</label>
+          <label><input type="radio" name="saletype" value="item"> 공급사/서브브랜드별</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 기간설정 -->
+    <div class="frow">
+      <div class="flabel">기간설정</div>
+      <div class="fval" style="flex-direction:column;align-items:flex-start;gap:7px">
+        <div class="radio-group">
+          <label><input type="radio" name="periodtype" value="d" checked=""> 기간별</label>
+          <label><input type="radio" name="periodtype" value="m"> 월별</label>
+          <label><input type="radio" name="periodtype" value="y"> 연도별</label>
+        </div>
+        <div class="date-row">
+          <input type="date" id="dt-from">
+          <span style="font-size:11px;color:#999">~</span>
+          <input type="date" id="dt-to">
+          <div id="dchips" style="display:flex;gap:4px;flex-wrap:wrap">
+            <div class="dchip" data-d="0">오늘</div>
+            <div class="dchip" data-d="1">어제</div>
+            <div class="dchip" data-d="7">7일</div>
+            <div class="dchip" data-d="15">15일</div>
+            <div class="dchip on" data-d="14">이전달</div>
+            <div class="dchip" data-d="30">지난달</div>
+            <div class="dchip" data-d="60">전월</div>
+            <div class="dchip" data-d="90">전전월</div>
+            <div class="dchip" data-d="9999">전체</div>
+          </div>
+          <span class="hint">※ 최대 검색 기준 90일</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 셀러허브 플랜 -->
+    <div class="frow">
+      <div class="flabel">셀러허브 플랜</div>
+      <div class="fval">
+        <div class="mall-chips" id="plan-chips">
+          <div class="mchip on" data-v="">전체</div>
+          <div class="mchip" data-v="신속">신속</div>
+          <div class="mchip" data-v="신속(골드)">신속(골드)</div>
+          <div class="mchip" data-v="스타트">스타트</div>
+          <div class="mchip" data-v="베이직">베이직</div>
+          <div class="mchip" data-v="플러스">플러스</div>
+          <div class="mchip" data-v="커스텀">커스텀</div>
+          <div class="mchip" data-v="파트너">파트너</div>
+          <div class="mchip" data-v="파트너-멤버">파트너-멤버</div>
+          <div class="mchip" data-v="V.I.P">V.I.P</div>
+          <div class="mchip" data-v="레이틀리">레이틀리</div>
+          <div class="mchip" data-v="베이직(사입)">베이직(사입)</div>
+          <div class="mchip" data-v="백화점아울렛">백화점아울렛</div>
+          <div class="mchip" data-v="온채널">온채널</div>
+          <div class="mchip" data-v="OC준수">OC준수</div>
+          <div class="mchip" data-v="OC자율">OC자율</div>
+          <div class="mchip" data-v="총판">총판</div>
+          <div class="mchip" data-v="신속(프로)">신속(프로)</div>
+          <div class="mchip" data-v="아리따움">아리따움</div>
+          <div class="mchip" data-v="comhub">comhub</div>
+          <div class="mchip" data-v="본사">본사</div>
+          <div class="mchip" data-v="주사경(정산X)">주사경(정산X)</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="val-msg" class="val-msg">⚠ 공급사 또는 메인담당MD 중 하나 이상을 반드시 선택해주세요.</div>
+
+    <div class="btn-row">
+      <button class="btn-search" onclick="doSearch()">조회</button>
+      <button class="btn-reset" onclick="doReset()">초기화</button>
+    </div>
+  </div>
+
+  <div class="result-bar">
+    <span class="ri" id="result-info">조회 기간 <strong id="ri-period">2026.05.14 – 2026.05.27</strong> · 제휴몰 <strong id="ri-mall">전체</strong> · <strong id="ri-cnt">5</strong>개 공급사</span>
+    <button class="btn-excel" onclick="doExcel()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      엑셀 다운로드
+    </button>
+  </div>
+
+  <div class="tbl-wrap">
+    <table id="stats-table">
+      <thead>
+        <tr>
+          <th rowspan="2" class="left" style="width:32px">#</th>
+          <th rowspan="2" class="left" style="min-width:110px">공급사</th>
+          <th rowspan="2" style="width:72px">담당MD</th>
+          <th rowspan="2" style="width:58px">주문<br>건수</th>
+          <th colspan="6" class="g-blue dl">출고 소요일 / 배송 지연</th>
+          <th colspan="4" class="g-amber dl">판매자 과실 취소</th>
+          <th colspan="2" class="g-red dl">판매자 귀책 반품</th>
+          <th colspan="2" class="g-teal dl">가송장</th>
+          <th colspan="2" class="g-purple dl">긴급알리미</th>
+        </tr>
+        <tr>
+          <th class="g-blue dl" style="width:46px">지연<br>1일</th>
+          <th class="g-blue" style="width:46px">지연<br>2일</th>
+          <th class="g-blue" style="width:46px">지연<br>3일</th>
+          <th class="g-blue" style="width:46px">지연<br>3일+</th>
+          <th class="g-blue" style="width:58px">지연합계<br>(%)</th>
+          <th class="g-blue" style="width:64px">평균<br>출고일</th>
+          <th class="g-amber dl" style="width:50px">품절<br>취소</th>
+          <th class="g-amber" style="width:50px">발송<br>누락</th>
+          <th class="g-amber" style="width:58px">합계<br>(%)</th>
+          <th class="g-amber" style="width:54px">취소율</th>
+          <th class="g-red dl" style="width:54px">귀책<br>반품</th>
+          <th class="g-red" style="width:54px">반품율</th>
+          <th class="g-teal dl" style="width:50px">건수</th>
+          <th class="g-teal" style="width:54px">비율</th>
+          <th class="g-purple dl" style="width:56px">담당자<br>발송</th>
+          <th class="g-purple" style="width:62px">자동발송<br>(%)</th>
+        </tr>
+      </thead>
+      <tbody id="tbl-body"><tr>
+      <td class="left muted">1</td>
+      <td class="left">셀러허브몰</td>
+      <td><span class="badge-md">김지선</span></td>
+      <td>1,284</td>
+      <td class="dl ok">32</td>
+      <td class="ok">25</td>
+      <td class="ok">18</td>
+      <td class="ok">12</td>
+      <td class="warn">87<br><small style="color:#aaa;font-size:10px">6.78%</small></td>
+      <td class="ok">2.34일</td>
+      <td class="dl warn">21</td>
+      <td class="warn">13</td>
+      <td class="warn">34<br><small style="color:#aaa;font-size:10px">2.65%</small></td>
+      <td class="dl warn">2.65%</td>
+      <td class="dl warn">19</td>
+      <td class="warn">1.48%</td>
+      <td class="dl warn">12</td>
+      <td class="warn">0.93%</td>
+      <td class="dl">7</td>
+      <td class="warn">14<br><small style="color:#aaa;font-size:10px">66.7%</small></td>
+    </tr><tr>
+      <td class="left muted">2</td>
+      <td class="left">ABC패션</td>
+      <td><span class="badge-md">이민준</span></td>
+      <td>872</td>
+      <td class="dl ok">18</td>
+      <td class="ok">9</td>
+      <td class="ok">4</td>
+      <td class="ok">2</td>
+      <td class="ok">33<br><small style="color:#aaa;font-size:10px">3.78%</small></td>
+      <td class="ok">1.82일</td>
+      <td class="dl ok">8</td>
+      <td class="warn">5</td>
+      <td class="ok">13<br><small style="color:#aaa;font-size:10px">1.49%</small></td>
+      <td class="dl ok">1.49%</td>
+      <td class="dl ok">7</td>
+      <td class="ok">0.80%</td>
+      <td class="dl warn">5</td>
+      <td class="warn">0.57%</td>
+      <td class="dl">3</td>
+      <td class="warn">5<br><small style="color:#aaa;font-size:10px">62.5%</small></td>
+    </tr><tr>
+      <td class="left muted">3</td>
+      <td class="left">드림생활</td>
+      <td><span class="badge-md">박서연</span></td>
+      <td>2,105</td>
+      <td class="dl warn">67</td>
+      <td class="warn">44</td>
+      <td class="ok">31</td>
+      <td class="warn">28</td>
+      <td class="warn">170<br><small style="color:#aaa;font-size:10px">8.08%</small></td>
+      <td class="danger">15일 이상</td>
+      <td class="dl warn">40</td>
+      <td class="warn">29</td>
+      <td class="warn">69<br><small style="color:#aaa;font-size:10px">3.28%</small></td>
+      <td class="dl warn">3.28%</td>
+      <td class="dl warn">42</td>
+      <td class="warn">2.00%</td>
+      <td class="dl warn">31</td>
+      <td class="warn">1.47%</td>
+      <td class="dl">14</td>
+      <td class="warn">28<br><small style="color:#aaa;font-size:10px">66.7%</small></td>
+    </tr><tr>
+      <td class="left muted">4</td>
+      <td class="left">그린홈</td>
+      <td><span class="badge-md">김지선</span></td>
+      <td>543</td>
+      <td class="dl ok">7</td>
+      <td class="ok">3</td>
+      <td class="ok">1</td>
+      <td class="ok">0</td>
+      <td class="ok">11<br><small style="color:#aaa;font-size:10px">2.03%</small></td>
+      <td class="ok">1.21일</td>
+      <td class="dl ok">4</td>
+      <td class="ok">2</td>
+      <td class="ok">6<br><small style="color:#aaa;font-size:10px">1.10%</small></td>
+      <td class="dl ok">1.10%</td>
+      <td class="dl ok">2</td>
+      <td class="ok">0.37%</td>
+      <td class="dl ok">1</td>
+      <td class="ok">0.18%</td>
+      <td class="dl">1</td>
+      <td class="warn">2<br><small style="color:#aaa;font-size:10px">66.7%</small></td>
+    </tr><tr>
+      <td class="left muted">5</td>
+      <td class="left">스타일원</td>
+      <td><span class="badge-md">이민준</span></td>
+      <td>391</td>
+      <td class="dl ok">5</td>
+      <td class="ok">2</td>
+      <td class="ok">1</td>
+      <td class="ok">0</td>
+      <td class="ok">8<br><small style="color:#aaa;font-size:10px">2.05%</small></td>
+      <td class="ok">0.97일</td>
+      <td class="dl ok">3</td>
+      <td class="ok">1</td>
+      <td class="ok">4<br><small style="color:#aaa;font-size:10px">1.02%</small></td>
+      <td class="dl ok">1.02%</td>
+      <td class="dl ok">1</td>
+      <td class="ok">0.26%</td>
+      <td class="dl ok">0</td>
+      <td class="ok">0.00%</td>
+      <td class="dl">1</td>
+      <td class="warn">2<br><small style="color:#aaa;font-size:10px">66.7%</small></td>
+    </tr></tbody>
+      <tfoot id="tbl-foot"><tr>
+    <td colspan="3" class="left">합계 / 평균</td>
+    <td>5,195</td>
+    <td class="dl">129</td><td>83</td><td>55</td><td>42</td>
+    <td>309<br><small style="font-weight:400;color:#aaa;font-size:10px">5.95%</small></td>
+    <td>—</td>
+    <td class="dl">76</td><td>50</td>
+    <td>126<br><small style="font-weight:400;color:#aaa;font-size:10px">2.43%</small></td>
+    <td class="dl">2.43%</td>
+    <td class="dl">71</td><td>1.37%</td>
+    <td class="dl">49</td><td>0.94%</td>
+    <td class="dl">25</td>
+    <td>50<br><small style="font-weight:400;color:#aaa;font-size:10px">66.7%</small></td>
+  </tr></tfoot>
+    </table>
+  </div>
+
+  
+</div>
+
+<script>
+// ── 데이터 ──────────────────────────────────────────────
+const SUPPLIERS = ['셀러허브몰','ABC패션','드림생활','그린홈','스타일원','패션플러스','리빙하우스','스포츠타운'];
+const MALLS = ['네이버쇼핑','카카오','쿠팡','11번가','G마켓','옥션','롯데온','SSG','티몬','위메프'];
+
+const DATA=[
+  {rank:1,name:'셀러허브몰',md:'김지선',orders:1284,d1:32,d2:25,d3:18,d3p:12,avg:2.34,sc:21,ship:13,ret:19,fake:12},
+  {rank:2,name:'ABC패션',md:'이민준',orders:872,d1:18,d2:9,d3:4,d3p:2,avg:1.82,sc:8,ship:5,ret:7,fake:5},
+  {rank:3,name:'드림생활',md:'박서연',orders:2105,d1:67,d2:44,d3:31,d3p:28,avg:16,sc:40,ship:29,ret:42,fake:31},
+  {rank:4,name:'그린홈',md:'김지선',orders:543,d1:7,d2:3,d3:1,d3p:0,avg:1.21,sc:4,ship:2,ret:2,fake:1},
+  {rank:5,name:'스타일원',md:'이민준',orders:391,d1:5,d2:2,d3:1,d3p:0,avg:0.97,sc:3,ship:1,ret:1,fake:0},
+];
+let cur=[...DATA];
+
+// 선택된 값 상태
+let selectedSuppliers = [];
+let selectedMalls = [];
+// 모달 내 임시 선택
+let tempSelected = {};
+
+// ── 모달 ──────────────────────────────────────────────
+function openModal(type) {
+  const items = type === 'supplier' ? SUPPLIERS : MALLS;
+  const current = type === 'supplier' ? selectedSuppliers : selectedMalls;
+  tempSelected[type] = [...current];
+
+  const listEl = document.getElementById('list-' + type);
+  // 기존 동적 항목 제거 (all-item 제외)
+  [...listEl.querySelectorAll('.modal-item:not(.all-item)')].forEach(el => el.remove());
+
+  items.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'modal-item';
+    div.dataset.val = item;
+    const chk = document.createElement('input');
+    chk.type = 'checkbox';
+    chk.id = 'chk-' + type + '-' + item;
+    chk.checked = tempSelected[type].includes(item);
+    chk.addEventListener('change', () => {
+      if (chk.checked) { if (!tempSelected[type].includes(item)) tempSelected[type].push(item); }
+      else { tempSelected[type] = tempSelected[type].filter(v => v !== item); }
+      updateAllChk(type, items);
+    });
+    const lbl = document.createElement('label');
+    lbl.htmlFor = chk.id;
+    lbl.textContent = item;
+    lbl.style.cursor = 'pointer';
+    div.appendChild(chk);
+    div.appendChild(lbl);
+    listEl.appendChild(div);
+  });
+
+  document.getElementById('search-' + type).value = '';
+  updateAllChk(type, items);
+  document.getElementById('modal-' + type).classList.add('open');
+}
+
+function closeModal(type) {
+  document.getElementById('modal-' + type).classList.remove('open');
+  document.getElementById('search-' + type).value = '';
+  // 검색 필터 초기화
+  document.querySelectorAll('#list-' + type + ' .modal-item:not(.all-item)').forEach(el => el.style.display = '');
+}
+
+function confirmModal(type) {
+  if (type === 'supplier') selectedSuppliers = [...tempSelected[type]];
+  else selectedMalls = [...tempSelected[type]];
+  renderTags(type);
+  closeModal(type);
+}
+
+function toggleAllModal(type) {
+  const items = type === 'supplier' ? SUPPLIERS : MALLS;
+  const allChk = document.getElementById('chk-' + type + '-all');
+  const shouldCheck = !allChk.checked;
+  allChk.checked = shouldCheck;
+  tempSelected[type] = shouldCheck ? [...items] : [];
+  document.querySelectorAll('#list-' + type + ' .modal-item:not(.all-item)').forEach(el => {
+    const chk = el.querySelector('input[type=checkbox]');
+    if (chk && el.style.display !== 'none') chk.checked = shouldCheck;
+  });
+}
+
+function updateAllChk(type, items) {
+  const allChk = document.getElementById('chk-' + type + '-all');
+  const visible = [...document.querySelectorAll('#list-' + type + ' .modal-item:not(.all-item)')]
+    .filter(el => el.style.display !== 'none');
+  const checkedVisible = visible.filter(el => el.querySelector('input').checked);
+  allChk.checked = visible.length > 0 && checkedVisible.length === visible.length;
+  allChk.indeterminate = checkedVisible.length > 0 && checkedVisible.length < visible.length;
+}
+
+function filterModal(type) {
+  const q = document.getElementById('search-' + type).value.trim().toLowerCase();
+  const items = type === 'supplier' ? SUPPLIERS : MALLS;
+  document.querySelectorAll('#list-' + type + ' .modal-item:not(.all-item)').forEach(el => {
+    el.style.display = el.dataset.val.toLowerCase().includes(q) ? '' : 'none';
+  });
+  updateAllChk(type, items);
+}
+
+function renderTags(type) {
+  const selected = type === 'supplier' ? selectedSuppliers : selectedMalls;
+  const tagsEl = document.getElementById('tags-' + type);
+  const placeholder = type === 'supplier' ? '미지정 시 전체 공급사 대상' : '미지정 시 전체 제휴몰 대상';
+  if (selected.length === 0) {
+    tagsEl.innerHTML = '<span class="sel-placeholder">' + placeholder + '</span>';
+  } else {
+    tagsEl.innerHTML = selected.map(v =>
+      '<span class="sel-tag">' + v + '<span class="rm" onclick="removeTag(\'' + type + '\',\'' + v + '\')">×</span></span>'
+    ).join('') + (selected.length > 0 ? '<span class="sel-placeholder" style="cursor:pointer;color:#888;text-decoration:underline;font-size:11px" onclick="openModal(\'' + type + '\')">수정</span>' : '');
+  }
+  if (type === 'supplier') updateTop50();
+}
+
+function removeTag(type, val) {
+  if (type === 'supplier') selectedSuppliers = selectedSuppliers.filter(v => v !== val);
+  else selectedMalls = selectedMalls.filter(v => v !== val);
+  renderTags(type);
+}
+
+// 모달 외부 클릭 시 닫기
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) {
+      const type = overlay.id.replace('modal-', '');
+      closeModal(type);
+    }
+  });
+});
+
+// ── 테이블 ──────────────────────────────────────────────
+const pct=(n,t)=>t>0?(n/t*100).toFixed(2)+'%':'0.00%';
+const avgFmt=v=>v>15?'15일 이상':v.toFixed(2)+'일';
+const dcls=(v,t,w,d)=>{const r=t>0?v/t*100:0;return r>=d?'danger':r>=w?'warn':'ok'};
+
+function render(data){
+  document.getElementById('tbl-body').innerHTML=data.map(r=>{
+    const del=r.d1+r.d2+r.d3+r.d3p;
+    const can=r.sc+r.ship;
+    const ua=Math.round(can*0.4),ud=Math.max(0,Math.round(can*0.2));
+    const autoPct=(ud+ua)>0?(ua/(ud+ua)*100).toFixed(1)+'%':'0.0%';
+    return `<tr>
+      <td class="left muted">${r.rank}</td>
+      <td class="left">${r.name}</td>
+      <td><span class="badge-md">${r.md}</span></td>
+      <td>${r.orders.toLocaleString()}</td>
+      <td class="dl ${dcls(r.d1,r.orders,3,8)}">${r.d1}</td>
+      <td class="${dcls(r.d2,r.orders,2,6)}">${r.d2}</td>
+      <td class="${dcls(r.d3,r.orders,1.5,4)}">${r.d3}</td>
+      <td class="${dcls(r.d3p,r.orders,1,3)}">${r.d3p}</td>
+      <td class="${dcls(del,r.orders,5,10)}">${del}<br><small style="color:#aaa;font-size:10px">${pct(del,r.orders)}</small></td>
+      <td class="${r.avg>15?'danger':r.avg>3?'warn':'ok'}">${avgFmt(r.avg)}</td>
+      <td class="dl ${dcls(r.sc,r.orders,1,3)}">${r.sc}</td>
+      <td class="${dcls(r.ship,r.orders,0.5,2)}">${r.ship}</td>
+      <td class="${dcls(can,r.orders,2,4)}">${can}<br><small style="color:#aaa;font-size:10px">${pct(can,r.orders)}</small></td>
+      <td class="dl ${dcls(can,r.orders,2,4)}">${pct(can,r.orders)}</td>
+      <td class="dl ${dcls(r.ret,r.orders,1,2)}">${r.ret}</td>
+      <td class="${dcls(r.ret,r.orders,1,2)}">${pct(r.ret,r.orders)}</td>
+      <td class="dl ${dcls(r.fake,r.orders,0.5,1.5)}">${r.fake}</td>
+      <td class="${dcls(r.fake,r.orders,0.5,1.5)}">${pct(r.fake,r.orders)}</td>
+      <td class="dl">${ud}</td>
+      <td class="${ua>ud?'warn':''}">${ua}<br><small style="color:#aaa;font-size:10px">${autoPct}</small></td>
+    </tr>`;
+  }).join('');
+
+  const tot=data.reduce((a,r)=>({
+    orders:a.orders+r.orders,d1:a.d1+r.d1,d2:a.d2+r.d2,d3:a.d3+r.d3,d3p:a.d3p+r.d3p,
+    sc:a.sc+r.sc,ship:a.ship+r.ship,ret:a.ret+r.ret,fake:a.fake+r.fake
+  }),{orders:0,d1:0,d2:0,d3:0,d3p:0,sc:0,ship:0,ret:0,fake:0});
+  const td=tot.d1+tot.d2+tot.d3+tot.d3p,tc=tot.sc+tot.ship;
+  const tua=Math.round(tc*0.4),tud=Math.max(0,Math.round(tc*0.2));
+  document.getElementById('tbl-foot').innerHTML=`<tr>
+    <td colspan="3" class="left">합계 / 평균</td>
+    <td>${tot.orders.toLocaleString()}</td>
+    <td class="dl">${tot.d1}</td><td>${tot.d2}</td><td>${tot.d3}</td><td>${tot.d3p}</td>
+    <td>${td}<br><small style="font-weight:400;color:#aaa;font-size:10px">${pct(td,tot.orders)}</small></td>
+    <td>—</td>
+    <td class="dl">${tot.sc}</td><td>${tot.ship}</td>
+    <td>${tc}<br><small style="font-weight:400;color:#aaa;font-size:10px">${pct(tc,tot.orders)}</small></td>
+    <td class="dl">${pct(tc,tot.orders)}</td>
+    <td class="dl">${tot.ret}</td><td>${pct(tot.ret,tot.orders)}</td>
+    <td class="dl">${tot.fake}</td><td>${pct(tot.fake,tot.orders)}</td>
+    <td class="dl">${tud}</td>
+    <td>${tua}<br><small style="font-weight:400;color:#aaa;font-size:10px">${(tud+tua)>0?(tua/(tud+tua)*100).toFixed(1)+'%':'0.0%'}</small></td>
+  </tr>`;
+  document.getElementById('ri-cnt').textContent=data.length;
+}
+
+// ── 필터 동작 ──────────────────────────────────────────────
+function doSearch(){
+  const m=document.getElementById('sel-md').value;
+  const msg=document.getElementById('val-msg');
+  if(selectedSuppliers.length===0 && !m){msg.classList.add('show');return;}
+  msg.classList.remove('show');
+  let f=[...DATA];
+  if(selectedSuppliers.length>0) f=f.filter(r=>selectedSuppliers.includes(r.name));
+  if(m) f=f.filter(r=>r.md===m);
+  cur=f; render(f);
+  const from=document.getElementById('dt-from').value.replace(/-/g,'.');
+  const to=document.getElementById('dt-to').value.replace(/-/g,'.');
+  document.getElementById('ri-period').textContent=from+' – '+to;
+  const mallLabel = selectedMalls.length>0 ? selectedMalls.join(', ') : '전체';
+  document.getElementById('ri-mall').textContent=mallLabel;
+}
+
+function doReset(){
+  selectedSuppliers=[];
+  selectedMalls=[];
+  renderTags('supplier');
+  renderTags('mall');
+  document.getElementById('sel-md').value='';
+  document.getElementById('val-msg').classList.remove('show');
+  document.querySelectorAll('#plan-chips .mchip').forEach(c=>c.classList.remove('on'));
+  document.querySelector('#plan-chips .mchip[data-v=""]').classList.add('on');
+  document.querySelectorAll('.dchip').forEach(c=>c.classList.remove('on'));
+  document.querySelector('.dchip[data-d="14"]').classList.add('on');
+  initDates();
+  cur=[...DATA]; render(cur);
+}
+
+function updateTop50(){
+  const row=document.getElementById('top50-row');
+  if(!row) return;
+  selectedSuppliers.length>0 ? row.classList.add('disabled') : row.classList.remove('disabled');
+}
+
+function initDates(){
+  const today=new Date();
+  const from=new Date(today); from.setDate(today.getDate()-13);
+  const fmt=d=>d.toISOString().split('T')[0];
+  document.getElementById('dt-from').value=fmt(from);
+  document.getElementById('dt-to').value=fmt(today);
+  document.getElementById('ri-period').textContent=fmt(from).replace(/-/g,'.')+' – '+fmt(today).replace(/-/g,'.');
+}
+
+function doExcel(){
+  const headers=[['#','공급사','담당MD','주문건수',
+    '지연1일','지연2일','지연3일','지연3일+','지연합계','지연비율(%)','평균출고일',
+    '품절취소','발송누락취소','과실합계','과실취소율(%)',
+    '귀책반품','귀책반품율(%)',
+    '가송장건수','가송장비율(%)',
+    '긴급알리미_담당자','긴급알리미_자동발송']];
+  const rows=cur.map(r=>{
+    const del=r.d1+r.d2+r.d3+r.d3p;
+    const can=r.sc+r.ship;
+    const ua=Math.round(can*0.4),ud=Math.max(0,Math.round(can*0.2));
+    return [r.rank,r.name,r.md,r.orders,
+      r.d1,r.d2,r.d3,r.d3p,del,(del/r.orders*100).toFixed(2),
+      r.avg>15?'15일 이상':r.avg.toFixed(2),
+      r.sc,r.ship,can,(can/r.orders*100).toFixed(2),
+      r.ret,(r.ret/r.orders*100).toFixed(2),
+      r.fake,(r.fake/r.orders*100).toFixed(2),
+      ud,ua];
+  });
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet([...headers,...rows]);
+  ws['!cols']=Array(21).fill({wch:14});
+  XLSX.utils.book_append_sheet(wb,ws,'공급사관리지표');
+  const today=new Date().toISOString().slice(0,10).replace(/-/g,'');
+  XLSX.writeFile(wb,`공급사관리지표_${today}.xlsx`);
+}
+
+document.getElementById('dchips').addEventListener('click',e=>{
+  const c=e.target.closest('.dchip'); if(!c) return;
+  document.querySelectorAll('.dchip').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on');
+  const n=parseInt(c.dataset.d);
+  const today=new Date();
+  const from=new Date(today); from.setDate(today.getDate()-(n===9999?3650:n));
+  const fmt=d=>d.toISOString().split('T')[0];
+  document.getElementById('dt-from').value=fmt(from);
+  document.getElementById('dt-to').value=fmt(today);
+});
+
+document.getElementById('plan-chips').addEventListener('click',e=>{
+  const c=e.target.closest('.mchip'); if(!c) return;
+  if(c.dataset.v===''){
+    document.querySelectorAll('#plan-chips .mchip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+  } else {
+    document.querySelector('#plan-chips .mchip[data-v=""]').classList.remove('on');
+    c.classList.toggle('on');
+    if(!document.querySelector('#plan-chips .mchip.on')) document.querySelector('#plan-chips .mchip[data-v=""]').classList.add('on');
+  }
+});
+
+initDates(); render(DATA);
+</script>
+
+
+</body></html>
