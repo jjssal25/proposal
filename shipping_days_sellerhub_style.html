@@ -1,0 +1,228 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Apple SD Gothic Neo', '맑은 고딕', sans-serif; font-size: 12px; color: #333; background: #f5f5f5; }
+
+.page-wrap { background: #f5f5f5; padding: 16px; }
+
+.section-block { background: #fff; border: 1px solid #ddd; margin-bottom: 12px; }
+.section-title { font-size: 13px; font-weight: bold; color: #222; padding: 10px 14px; border-bottom: 1px solid #e0e0e0; background: #fafafa; display: flex; align-items: center; gap: 6px; }
+.section-title .req-star { color: #d9534f; font-size: 11px; }
+
+.form-table { width: 100%; border-collapse: collapse; }
+.form-table tr { border-bottom: 1px solid #ebebeb; }
+.form-table tr:last-child { border-bottom: none; }
+.form-table th {
+  width: 160px;
+  background: #f7f7f7;
+  border-right: 1px solid #e0e0e0;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: normal;
+  font-size: 12px;
+  color: #555;
+  vertical-align: top;
+  line-height: 1.5;
+}
+.form-table td { padding: 9px 14px; vertical-align: top; }
+.form-table th .opt-label { font-size: 10px; color: #999; margin-left: 3px; }
+
+input[type="text"], input[type="number"], select {
+  height: 28px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 0 8px;
+  font-size: 12px;
+  color: #333;
+  background: #fff;
+}
+input[type="text"]:focus, input[type="number"]:focus, select:focus {
+  outline: none;
+  border-color: #4a90d9;
+  box-shadow: 0 0 0 2px rgba(74,144,217,0.15);
+}
+select { padding-right: 20px; cursor: pointer; min-width: 200px; }
+
+.field-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.unit-txt { font-size: 12px; color: #555; }
+.guide-txt { font-size: 11px; color: #888; margin-top: 4px; line-height: 1.5; }
+.guide-txt.blue { color: #1a6bb5; }
+
+.checkbox-wrap { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.checkbox-wrap input[type="checkbox"] { width: 13px; height: 13px; cursor: pointer; accent-color: #4a90d9; }
+.checkbox-wrap label { font-size: 12px; color: #333; cursor: pointer; }
+
+.apply-preview { display: inline-flex; align-items: center; gap: 6px; background: #f0f6ff; border: 1px solid #b8d4f5; border-radius: 2px; padding: 5px 10px; margin-top: 6px; }
+.apply-preview .preview-label { font-size: 11px; color: #555; }
+.apply-preview .preview-val { font-size: 12px; font-weight: bold; color: #1a5fa8; }
+.apply-preview .preview-src { font-size: 11px; color: #888; }
+
+.priority-info { background: #fffbe6; border: 1px solid #ffe58f; border-radius: 2px; padding: 9px 12px; margin-top: 8px; font-size: 11px; color: #7a5c00; line-height: 1.8; }
+.priority-info ol { padding-left: 18px; }
+.priority-info li { margin: 0; }
+.priority-info .current-badge { display: inline-block; background: #1a6bb5; color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 2px; margin-left: 4px; vertical-align: middle; }
+
+.disabled-field { background: #f5f5f5; color: #aaa; }
+
+.btn-small { height: 26px; padding: 0 10px; font-size: 11px; border: 1px solid #bbb; background: #fff; border-radius: 2px; cursor: pointer; color: #444; }
+.btn-small:hover { background: #f0f0f0; }
+.btn-blue-small { background: #4a90d9; border-color: #357abd; color: #fff; }
+.btn-blue-small:hover { background: #357abd; }
+
+.badge-new { display: inline-block; background: #e8f4fd; border: 1px solid #b8d4f5; color: #1a6bb5; font-size: 10px; padding: 1px 5px; border-radius: 2px; margin-left: 4px; vertical-align: middle; }
+
+.section-block.highlight-section { border-color: #b8d4f5; }
+.section-block.highlight-section .section-title { background: #eaf3fb; border-bottom-color: #b8d4f5; color: #1a5fa8; }
+</style>
+
+<h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">셀러허브 어드민 스타일 - 배송 설정 출고소요일 UI</h2>
+
+<div class="page-wrap">
+
+  <div class="section-block">
+    <div class="section-title">배송 웹훅셋</div>
+    <table class="form-table">
+      <tr>
+        <th>배송타입</th>
+        <td>
+          <div class="field-row">
+            <select style="min-width:160px;">
+              <option>배송비 무료</option>
+              <option>배송비 유료</option>
+              <option>조건부 무료</option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>배송템플릿</th>
+        <td>
+          <div class="field-row">
+            <select id="tmpl-select" style="min-width:220px;" onchange="onTemplateChange(this)">
+              <option value="2">기본 배송 템플릿 (출고소요일: 2일)</option>
+              <option value="1">빠른배송 템플릿 (출고소요일: 1일)</option>
+              <option value="5">대형상품 템플릿 (출고소요일: 5일)</option>
+            </select>
+            <button class="btn-small">템플릿 관리</button>
+          </div>
+          <div class="guide-txt">배송비, 반품배송비 등 배송 조건은 배송템플릿에서 설정합니다.</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section-block highlight-section">
+    <div class="section-title">
+      출고소요일
+      <span class="badge-new">신규</span>
+    </div>
+    <table class="form-table">
+      <tr>
+        <th>
+          상품별 출고소요일
+          <span class="opt-label">(선택)</span>
+        </th>
+        <td>
+          <div class="field-row">
+            <label class="checkbox-wrap">
+              <input type="checkbox" id="override-chk" onchange="onToggle(this)">
+              <label for="override-chk">상품별 출고소요일 직접 지정</label>
+            </label>
+          </div>
+
+          <div id="input-area" style="display:none; margin-top:8px;">
+            <div class="field-row">
+              <input type="number" id="days-input" min="0" max="30" placeholder="숫자 입력" style="width:80px;" oninput="updatePreview(this.value)">
+              <span class="unit-txt">일</span>
+              <span class="guide-txt" style="margin-top:0;">(0~30 범위)</span>
+            </div>
+          </div>
+
+          <div class="apply-preview" id="preview-box">
+            <span class="preview-label">적용될 출고소요일</span>
+            <span class="preview-val" id="preview-val">2일</span>
+            <span class="preview-src" id="preview-src">— 배송 템플릿 기준</span>
+          </div>
+
+          <div class="priority-info">
+            <strong style="display:block; margin-bottom:4px; font-size:11px;">출고소요일 적용 우선순위</strong>
+            <ol id="priority-list">
+              <li>상품 정보에 직접 입력된 출고소요일</li>
+              <li>배송 템플릿 내 설정된 출고소요일 <span class="current-badge" id="badge-tmpl">현재 적용</span></li>
+              <li>판매정보 설정 &gt; 배송정책 기본 출고소요일</li>
+              <li>통합관리자 &gt; 제휴몰별 출고소요일 설정값</li>
+            </ol>
+          </div>
+
+          <div class="guide-txt" style="margin-top:6px;">
+            미입력 시 ①배송 템플릿 출고소요일 ②판매정보 배송정책 기본값 순으로 적용됩니다.
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<script>
+var tmplDays = { '2': 2, '1': 1, '5': 5 };
+var tmplNames = { '2': '기본 배송 템플릿', '1': '빠른배송 템플릿', '5': '대형상품 템플릿' };
+
+function getCurrentTmplDays() {
+  var sel = document.getElementById('tmpl-select');
+  return tmplDays[sel.value] || 2;
+}
+function getCurrentTmplName() {
+  var sel = document.getElementById('tmpl-select');
+  return tmplNames[sel.value] || '배송 템플릿';
+}
+
+function onTemplateChange(sel) {
+  var chk = document.getElementById('override-chk');
+  if (!chk.checked) {
+    document.getElementById('preview-val').textContent = getCurrentTmplDays() + '일';
+    document.getElementById('preview-src').textContent = '— ' + getCurrentTmplName() + ' 기준';
+  }
+}
+
+function onToggle(chk) {
+  var inputArea = document.getElementById('input-area');
+  var badgeGood = document.getElementById('badge-good');
+  var badgeTmpl = document.getElementById('badge-tmpl');
+  inputArea.style.display = chk.checked ? 'block' : 'none';
+  if (!chk.checked) {
+    document.getElementById('days-input').value = '';
+    document.getElementById('preview-val').textContent = getCurrentTmplDays() + '일';
+    document.getElementById('preview-src').textContent = '— ' + getCurrentTmplName() + ' 기준';
+    if (badgeGood) badgeGood.style.display = 'none';
+    if (badgeTmpl) badgeTmpl.style.display = 'inline';
+  }
+}
+
+function updatePreview(val) {
+  var n = parseInt(val, 10);
+  var badgeTmpl = document.getElementById('badge-tmpl');
+  var li1 = document.getElementById('priority-list').children[0];
+
+  if (!isNaN(n) && val !== '') {
+    document.getElementById('preview-val').textContent = n + '일';
+    document.getElementById('preview-src').textContent = '— 상품 정보 직접 입력 (최우선)';
+    badgeTmpl.style.display = 'none';
+    if (!document.getElementById('badge-good')) {
+      var span = document.createElement('span');
+      span.className = 'current-badge';
+      span.id = 'badge-good';
+      span.textContent = '현재 적용';
+      li1.appendChild(span);
+    } else {
+      document.getElementById('badge-good').style.display = 'inline';
+    }
+  } else {
+    document.getElementById('preview-val').textContent = getCurrentTmplDays() + '일';
+    document.getElementById('preview-src').textContent = '— ' + getCurrentTmplName() + ' 기준';
+    badgeTmpl.style.display = 'inline';
+    var bg = document.getElementById('badge-good');
+    if (bg) bg.style.display = 'none';
+  }
+}
+</script>
