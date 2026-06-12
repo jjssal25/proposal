@@ -6,75 +6,71 @@
 <title>셀러허브 배송정책 설정</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, 'Malgun Gothic', '맑은 고딕', sans-serif; background: #f0f0f0; padding: 16px; }
+body { font-family: -apple-system, 'Malgun Gothic', '맑은 고딕', sans-serif; background: #fff; padding: 20px; font-size: 13px; color: #333; }
 
-.version-toggle-bar { background: #fff; border: 1px solid #ddd; border-radius: 2px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.version-toggle-bar { background: #fafafa; border: 1px solid #ddd; border-radius: 2px; padding: 10px 14px; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
 .perm-label { font-size: 11px; color: #888; }
-.perm-btn { font-size: 11px; padding: 4px 12px; border-radius: 2px; border: 1px solid #ccc; background: #f5f5f5; color: #555; cursor: pointer; }
+.perm-btn { font-size: 11px; padding: 4px 12px; border-radius: 2px; border: 1px solid #ccc; background: #fff; color: #555; cursor: pointer; }
 .perm-btn.on { background: #4a90d9; border-color: #3a7fc9; color: #fff; }
 
-.section-block { background: #fff; border: 1px solid #ddd; margin-bottom: 12px; }
-.section-title-bar { font-size: 15px; font-weight: bold; color: #111; padding: 14px 20px; border-bottom: 1px solid #e8e8e8; }
+.policy-title { font-size: 16px; font-weight: bold; color: #222; margin-bottom: 12px; }
+.req { color: #e03030; }
 
-.field-table { width: 100%; border-collapse: collapse; }
-.field-table tr { border-bottom: 1px solid #ebebeb; }
-.field-table tr:last-child { border-bottom: none; }
-.field-table th { width: 150px; min-width: 150px; background: #fafafa; border-right: 1px solid #e8e8e8; padding: 14px 16px; font-size: 12px; font-weight: bold; color: #444; text-align: left; vertical-align: top; }
-.field-table td { padding: 14px 18px; vertical-align: top; }
+.policy-grid { border: 1px solid #e0e0e0; }
+.policy-row { display: grid; grid-template-columns: 180px 1fr; border-bottom: 1px solid #e0e0e0; }
+.policy-row:last-child { border-bottom: none; }
 
-.tmpl-tab-row { display: flex; align-items: center; gap: 8px; }
-.tmpl-btn { height: 32px; padding: 0 16px; font-size: 13px; border-radius: 4px; border: 1px solid #ccc; background: #fff; color: #555; cursor: pointer; }
+.policy-label { background: #fafafa; border-right: 1px solid #e0e0e0; padding: 18px 16px; font-size: 13px; font-weight: bold; color: #333; display: flex; align-items: flex-start; }
+.policy-content { padding: 16px 18px; }
+
+.tmpl-tab-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.tmpl-btn { height: 34px; padding: 0 18px; font-size: 13px; border-radius: 2px; border: 1px solid #ccc; background: #fff; color: #555; cursor: pointer; }
 .tmpl-btn.active { background: #4a90d9; border-color: #3a7fc9; color: #fff; }
 
-.info-banner { background: #eef5fc; border: 1px solid #b8d4ef; border-radius: 4px; padding: 12px 16px; margin: 12px 18px; display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #2563a8; line-height: 1.6; }
+.info-banner { background: #eef5fc; border: 1px solid #b8d4ef; border-radius: 4px; padding: 12px 16px; font-size: 13px; color: #2563a8; line-height: 1.6; }
 .info-banner a { color: #2563a8; text-decoration: underline; cursor: pointer; }
 
-select.sh-select-sm { height: 30px; font-size: 12px; color: #333; border: 1px solid #ccc; border-radius: 2px; background: #fff; padding: 0 6px; cursor: pointer; width: 82px; }
-input.sh-num { height: 30px; width: 66px; font-size: 12px; color: #333; border: 1px solid #ccc; border-radius: 2px; background: #fff; padding: 0 8px; text-align: center; }
-input.sh-num:focus, select.sh-select-sm:focus { outline: none; border-color: #4a90d9; }
-input.sh-num:disabled { background: #f5f5f5; color: #aaa; border-color: #e0e0e0; cursor: not-allowed; }
-.unit { font-size: 12px; color: #555; margin-left: 4px; line-height: 30px; }
-.req { color: #e03030; }
-.radio-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.radio-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .radio-row:last-child { margin-bottom: 0; }
-.radio-row input[type=radio] { margin: 0; cursor: pointer; accent-color: #4a90d9; }
-.radio-row label { font-size: 12px; color: #333; cursor: pointer; }
-.divider-dash { border: none; border-top: 1px dashed #e8e8e8; margin: 10px 0; }
+.radio-row input[type=radio] { margin: 0; cursor: pointer; accent-color: #4a90d9; width: 16px; height: 16px; }
+.radio-row label { font-size: 13px; color: #333; cursor: pointer; }
 
+input.sh-num { height: 32px; width: 70px; font-size: 13px; color: #333; border: 1px solid #ccc; border-radius: 2px; background: #fff; padding: 0 8px; text-align: center; }
+input.sh-num:focus { outline: none; border-color: #4a90d9; }
+input.sh-num:disabled { background: #f5f5f5; color: #aaa; border-color: #e0e0e0; cursor: not-allowed; }
+.unit { font-size: 13px; color: #555; margin-left: 6px; }
 
-.applied-area { background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 2px; padding: 8px 12px; margin-top: 10px; }
-.applied-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.av-label { font-size: 11px; color: #888; }
-.av-val { font-size: 13px; font-weight: bold; color: #222; }
-.av-detail { font-size: 11px; color: #888; margin-top: 4px; }
+.divider-dash { border: none; border-top: 1px solid #eee; margin: 14px 0; }
 
-.priority-track { display: flex; align-items: center; flex-wrap: nowrap; margin-top: 8px; }
-.p-step { display: flex; align-items: center; gap: 4px; padding: 3px 8px; border: 1px solid #e0e0e0; border-radius: 2px; font-size: 11px; }
-.p-step .num { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; border-radius: 50%; font-size: 10px; font-weight: bold; flex-shrink: 0; }
-.p-step.active { background: #eef5fc; border-color: #b8d4ef; }
+.applied-line { font-size: 13px; color: #333; padding: 4px 0; }
+.applied-line .av-val { font-weight: bold; color: #222; }
+.applied-line .av-sep { color: #ccc; margin: 0 6px; }
+.applied-line .av-src { color: #4a90d9; }
+
+.priority-track { display: flex; align-items: stretch; flex-wrap: wrap; margin: 14px 0; gap: 6px; }
+.p-step { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border: 1px solid #e0e0e0; border-radius: 2px; font-size: 12px; background: #fff; flex: 0 0 auto; justify-content: center; white-space: nowrap; }
+.p-step .num { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; font-size: 11px; font-weight: bold; flex-shrink: 0; }
+.p-step.active { background: #eef5fc; border-color: #4a90d9; }
 .p-step.active .num { background: #4a90d9; color: #fff; }
 .p-step.active .plbl { color: #2563a8; font-weight: bold; }
 .p-step.pending .num { background: #e8e8e8; color: #999; }
 .p-step.pending .plbl { color: #aaa; }
-.p-arr { font-size: 11px; color: #ccc; padding: 0 3px; }
+.p-arr { font-size: 13px; color: #ccc; display: inline-flex; align-items: center; }
 
-.notice-wrap { margin-top: 10px; background: #fffbe6; border: 1px solid #ffe58f; border-radius: 4px; overflow: hidden; }
-.notice-header { display: flex; align-items: center; gap: 6px; padding: 9px 12px; cursor: pointer; user-select: none; }
+.notice-wrap { margin-top: 4px; background: #fffbe6; border: 1px solid #ffe58f; border-radius: 4px; overflow: hidden; }
+.notice-header { display: flex; align-items: center; gap: 6px; padding: 10px 14px; cursor: pointer; user-select: none; }
 .notice-icon-hd { font-size: 15px; color: #d48806; }
-.notice-header-text { font-size: 12px; font-weight: bold; color: #7c5c00; flex: 1; }
+.notice-header-text { font-size: 13px; font-weight: bold; color: #7c5c00; flex: 1; }
 .notice-toggle { font-size: 11px; color: #a07800; }
-.notice-body { border-top: 1px solid #ffe58f; padding: 10px 12px 12px; }
-.notice-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-.notice-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #555; line-height: 1.65; }
-.ni-icon { flex-shrink: 0; margin-top: 1px; font-size: 14px; }
+.notice-body { border-top: 1px solid #ffe58f; padding: 12px 14px 14px; }
+.notice-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 9px; }
+.notice-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #555; line-height: 1.65; }
+.ni-icon { flex-shrink: 0; margin-top: 2px; font-size: 13px; }
 .ni-icon.info { color: #4a90d9; }
 .ni-icon.neutral { color: #888; }
 .ni-icon.warn { color: #e03030; }
 .notice-item strong { color: #333; }
-.notice-penalty { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 2px; background: #fff1f0; border: 1px solid #ffccc7; color: #cf1322; margin-left: 2px; }
-
-.info-box-sm { background: #eef5fc; border: 1px solid #b8d4ef; border-radius: 2px; padding: 7px 10px; font-size: 11px; color: #2563a8; line-height: 1.7; margin-top: 7px; }
-.inline-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.notice-penalty { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 2px; background: #fff1f0; border: 1px solid #ffccc7; color: #cf1322; margin: 0 2px; }
 </style>
 </head>
 <body>
@@ -85,113 +81,106 @@ input.sh-num:disabled { background: #f5f5f5; color: #aaa; border-color: #e0e0e0;
   <button class="perm-btn" id="btn-no" onclick="setPerm(false)">배송 템플릿 없음</button>
 </div>
 
-<!-- 배송 템플릿 섹션 -->
-<div class="section-block" id="tmpl-section">
-  <div class="section-title-bar">배송 템플릿</div>
-  <table class="field-table">
-    <tr>
-      <th>배송 템플릿 선택</th>
-      <td>
-        <div class="tmpl-tab-row">
-          <button class="tmpl-btn active">배송 템플릿 선택</button>
-          <button class="tmpl-btn">기본 배송정책 정보</button>
-        </div>
-      </td>
-    </tr>
-  </table>
-  <div class="info-banner">
-    ℹ&nbsp;배송 템플릿 미 선택 시 기본 배송정책 정보가 자동으로 적용되요.&nbsp;
-    <a>배송 템플릿 적용 가능 제휴몰 &gt;</a>
+<div class="policy-title">배송정책 설정 <span class="req">*</span></div>
+
+<div class="policy-grid">
+
+  <!-- 배송 템플릿 선택 (권한 있는 경우만 노출) -->
+  <div class="policy-row" id="row-tmpl">
+    <div class="policy-label">배송 템플릿 선택</div>
+    <div class="policy-content">
+      <div class="tmpl-tab-row">
+        <button class="tmpl-btn active">배송 템플릿 선택</button>
+        <button class="tmpl-btn">기본 배송정책 정보</button>
+      </div>
+      <div class="info-banner">
+        ℹ&nbsp;배송 템플릿 미 선택 시 기본 배송정책 정보가 자동으로 적용되요.&nbsp;
+        <a>배송 템플릿 적용 가능 제휴몰 &gt;</a>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- 배송정책 설정 섹션 -->
-<div class="section-block">
-  <div class="section-title-bar">배송정책 설정 <span class="req">*</span></div>
-  <table class="field-table">
+  <!-- 출고소요일 -->
+  <div class="policy-row">
+    <div class="policy-label">출고소요일</div>
+    <div class="policy-content">
 
-    <!-- 출고소요일 -->
-    <tr>
-      <th>출고소요일</th>
-      <td>
-        <!-- 배송템플릿 있음 -->
-        <div id="lead-with-tmpl">
-          <div class="radio-row">
-            <input type="radio" name="lead" id="r-tmpl" checked onchange="onLeadMode('tmpl')" />
-            <label for="r-tmpl">배송 템플릿 설정값 사용</label>
-          </div>
-          <div class="radio-row">
-            <input type="radio" name="lead" id="r-direct-t" onchange="onLeadMode('direct')" />
-            <label for="r-direct-t">이 상품에 직접 지정</label>
-            <input class="sh-num" type="number" id="lead-inp-t" min="1" max="30" placeholder="1" disabled oninput="onLeadDaysT(this.value)" />
-            <span class="unit">일</span>
-          </div>
+      <!-- 배송템플릿 있음 -->
+      <div id="lead-with-tmpl">
+        <div class="radio-row">
+          <input type="radio" name="lead" id="r-tmpl" checked onchange="onLeadMode('tmpl')" />
+          <label for="r-tmpl">배송 템플릿 설정값 사용</label>
         </div>
-        <!-- 배송템플릿 없음 -->
-        <div id="lead-no-tmpl" style="display:none;">
-          <div class="inline-row">
-            <input class="sh-num" type="number" id="lead-inp-n" min="1" max="30" placeholder="1" oninput="onLeadDaysN(this.value)" />
-            <span class="unit">일</span>
-          </div>
+        <div class="radio-row">
+          <input type="radio" name="lead" id="r-direct-t" onchange="onLeadMode('direct')" />
+          <label for="r-direct-t">이 상품에 직접 지정</label>
+          <input class="sh-num" type="number" id="lead-inp-t" min="1" max="30" placeholder="1" disabled oninput="onLeadDaysT(this.value)" />
+          <span class="unit">일</span>
         </div>
-
-        <hr class="divider-dash" />
-
-        <div class="applied-area">
-          <div class="applied-row">
-            <span class="av-label">실제 적용 출고소요일</span>
-            <span class="av-val" id="lead-val">2일</span>
-            <span style="font-size:11px;color:#888;">— <span id="lead-src" style="color:#4a90d9">배송 템플릿 (기본 배송 템플릿)</span></span>
-          </div>
+      </div>
+      <!-- 배송템플릿 없음 -->
+      <div id="lead-no-tmpl" style="display:none;">
+        <div class="radio-row">
+          <input class="sh-num" type="number" id="lead-inp-n" min="1" max="30" placeholder="1" oninput="onLeadDaysN(this.value)" />
+          <span class="unit">일</span>
         </div>
+      </div>
 
-        <!-- 우선순위: 템플릿 있음 -->
-        <div class="priority-track" id="pt-with">
-          <div class="p-step pending" id="lps1"><span class="num">1</span><span class="plbl">상품 직접 입력</span></div>
-          <span class="p-arr">›</span>
-          <div class="p-step active" id="lps2"><span class="num">2</span><span class="plbl">배송 템플릿</span></div>
-          <span class="p-arr">›</span>
-          <div class="p-step pending" id="lps3"><span class="num">3</span><span class="plbl">배송정책 기본값</span></div>
-          <span class="p-arr">›</span>
-          <div class="p-step pending" id="lps4"><span class="num">4</span><span class="plbl">셀러허브 기본 설정 (5일)</span></div>
-        </div>
-        <!-- 우선순위: 템플릿 없음 -->
-        <div class="priority-track" id="pt-no" style="display:none;">
-          <div class="p-step active" id="nps1"><span class="num">1</span><span class="plbl">상품 직접 입력</span></div>
-          <span class="p-arr">›</span>
-          <div class="p-step pending" id="nps2"><span class="num">2</span><span class="plbl">배송정책 기본값</span></div>
-          <span class="p-arr">›</span>
-          <div class="p-step pending" id="nps3"><span class="num">3</span><span class="plbl">셀러허브 기본 설정 (5일)</span></div>
-        </div>
+      <hr class="divider-dash" />
 
-        <!-- 안내 문구 -->
-        <div class="notice-wrap">
-          <div class="notice-header" onclick="toggleNotice(this)">
-            <span class="notice-icon-hd">⚠</span>
-            <span class="notice-header-text">출고소요일 설정 전 꼭 확인하세요</span>
-            <span class="notice-toggle">접기 ▲</span>
-          </div>
-          <div class="notice-body">
-            <ul class="notice-list">
-              <li class="notice-item">
-                <span class="ni-icon info">●</span>
-                <span>출고소요일을 지원하는 제휴몰에는 <strong>등록하신 기간으로 노출</strong>됩니다.</span>
-              </li>
-              <li class="notice-item">
-                <span class="ni-icon neutral">●</span>
-                <span>타 솔루션으로 주문 처리 시, <strong>해당 솔루션 기준의 발송 예정일</strong>이 등록됩니다.</span>
-              </li>
-              <li class="notice-item">
-                <span class="ni-icon warn">▲</span>
-                <span>상품에 설정된 출고소요일과 관계없이 주문 처리 시의 <strong>표준발송기한은 운영정책에 따라 적용</strong>됩니다. <span class="notice-penalty">배송지연 페널티</span>가 발생할 수 있습니다.</span>
-              </li>
-            </ul>
-          </div>
-        </div>
+      <!-- 실제 적용 출고소요일 -->
+      <div class="applied-line">
+        실제 적용 출고소요일 <span class="av-val" id="lead-val">2일</span>
+        <span class="av-sep">—</span> <span class="av-src" id="lead-src">배송 템플릿 (기본 배송 템플릿)</span>
+      </div>
 
-      </td>
-    </tr>
-  </table>
+      <!-- 우선순위: 템플릿 있음 -->
+      <div class="priority-track" id="pt-with">
+        <div class="p-step pending" id="lps1"><span class="num">1</span><span class="plbl">상품 직접 입력</span></div>
+        <span class="p-arr">›</span>
+        <div class="p-step active" id="lps2"><span class="num">2</span><span class="plbl">배송 템플릿</span></div>
+        <span class="p-arr">›</span>
+        <div class="p-step pending" id="lps3"><span class="num">3</span><span class="plbl">배송정책 기본값</span></div>
+        <span class="p-arr">›</span>
+        <div class="p-step pending" id="lps4"><span class="num">4</span><span class="plbl">셀러허브 기본 설정 (5일)</span></div>
+      </div>
+      <!-- 우선순위: 템플릿 없음 -->
+      <div class="priority-track" id="pt-no" style="display:none;">
+        <div class="p-step active" id="nps1"><span class="num">1</span><span class="plbl">상품 직접 입력</span></div>
+        <span class="p-arr">›</span>
+        <div class="p-step pending" id="nps2"><span class="num">2</span><span class="plbl">배송정책 기본값</span></div>
+        <span class="p-arr">›</span>
+        <div class="p-step pending" id="nps3"><span class="num">3</span><span class="plbl">셀러허브 기본 설정 (5일)</span></div>
+      </div>
+
+      <!-- 안내 문구 -->
+      <div class="notice-wrap">
+        <div class="notice-header" onclick="toggleNotice(this)">
+          <span class="notice-icon-hd">⚠</span>
+          <span class="notice-header-text">출고소요일 설정 전 꼭 확인하세요</span>
+          <span class="notice-toggle">접기 ▲</span>
+        </div>
+        <div class="notice-body">
+          <ul class="notice-list">
+            <li class="notice-item">
+              <span class="ni-icon info">●</span>
+              <span>출고소요일을 지원하는 제휴몰에는 <strong>등록하신 기간으로 노출</strong>됩니다.</span>
+            </li>
+            <li class="notice-item">
+              <span class="ni-icon neutral">●</span>
+              <span>타 솔루션으로 주문 처리 시, <strong>해당 솔루션 기준의 발송 예정일</strong>이 등록됩니다.</span>
+            </li>
+            <li class="notice-item">
+              <span class="ni-icon warn">▲</span>
+              <span>상품에 설정된 출고소요일과 관계없이 주문 처리 시의 <strong>표준발송기한은 운영정책에 따라 적용</strong>됩니다. <span class="notice-penalty">배송지연 페널티</span>가 발생할 수 있습니다.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -202,11 +191,13 @@ function setPerm(has) {
   hasTmpl = has;
   document.getElementById('btn-has').className = 'perm-btn' + (has ? ' on' : '');
   document.getElementById('btn-no').className = 'perm-btn' + (!has ? ' on' : '');
-  document.getElementById('tmpl-section').style.display = has ? '' : 'none';
+
+  document.getElementById('row-tmpl').style.display = has ? '' : 'none';
   document.getElementById('lead-with-tmpl').style.display = has ? '' : 'none';
   document.getElementById('lead-no-tmpl').style.display = has ? 'none' : '';
   document.getElementById('pt-with').style.display = has ? '' : 'none';
   document.getElementById('pt-no').style.display = has ? 'none' : '';
+
   if (has) {
     leadMode = 'tmpl';
     document.getElementById('r-tmpl').checked = true;
@@ -242,13 +233,13 @@ function updateLeadWithTmpl() {
   var days = parseInt(document.getElementById('lead-inp-t').value, 10);
   var hasVal = !isNaN(days) && document.getElementById('lead-inp-t').value !== '';
   if (leadMode === 'direct' && hasVal) {
-    val.textContent = days + '일'; src.textContent = '상품 직접 입력 (최우선 적용)'; src.style.color = '#2e7d32';
+    val.textContent = days + '일'; src.textContent = '상품 직접 입력 (최우선 적용)';
     setSteps(['lps1','lps2','lps3','lps4'], 'lps1');
   } else if (leadMode === 'tmpl') {
-    val.textContent = '2일'; src.textContent = '배송 템플릿 (기본 배송 템플릿)'; src.style.color = '#4a90d9';
+    val.textContent = '2일'; src.textContent = '배송 템플릿 (기본 배송 템플릿)';
     setSteps(['lps1','lps2','lps3','lps4'], 'lps2');
   } else {
-    val.textContent = '배송정책 기본값'; src.textContent = '판매정보 > 배송정책 기본 출고소요일'; src.style.color = '#888';
+    val.textContent = '배송정책 기본값'; src.textContent = '판매정보 > 배송정책 기본 출고소요일';
     setSteps(['lps1','lps2','lps3','lps4'], 'lps3');
   }
 }
@@ -258,10 +249,10 @@ function updateLeadNoTmpl(v) {
   var src = document.getElementById('lead-src');
   var n = parseInt(v, 10);
   if (!isNaN(n) && v !== '') {
-    val.textContent = n + '일'; src.textContent = '상품 직접 입력 (최우선 적용)'; src.style.color = '#2e7d32';
+    val.textContent = n + '일'; src.textContent = '상품 직접 입력 (최우선 적용)';
     setSteps(['nps1','nps2','nps3'], 'nps1');
   } else {
-    val.textContent = '배송정책 기본값'; src.textContent = '판매정보 > 배송정책 기본 출고소요일'; src.style.color = '#888';
+    val.textContent = '배송정책 기본값'; src.textContent = '판매정보 > 배송정책 기본 출고소요일';
     setSteps(['nps1','nps2','nps3'], 'nps2');
   }
 }
