@@ -1,4 +1,6 @@
-<html lang="ko"><head>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>셀러허브 배송정책 설정</title>
@@ -62,7 +64,7 @@ input.sh-num:focus { outline: none; border-color: #4a90d9; }
 .p-step.highlight .plbl { color: #555; font-weight: normal; }
 .p-arr { font-size: 13px; color: #ccc; display: inline-flex; align-items: center; }
 
-/* 우선순위 하단 보조 설명 (1번 영역 → 2번 하단으로 이동) */
+/* 우선순위 하단 보조 설명 */
 .priority-footnote {
   margin-top: 10px;
   padding: 10px 12px;
@@ -71,12 +73,7 @@ input.sh-num:focus { outline: none; border-color: #4a90d9; }
   border-radius: 3px;
   font-size: 12px;
   color: #555;
-  line-height: 1.75;
-}
-.priority-footnote .tag {
-  display: inline-block; font-size: 11px; padding: 1px 6px;
-  border-radius: 2px; background: #cce0f7; border: 1px solid #92c2ef;
-  color: #174f8a; margin: 0 2px; vertical-align: middle;
+  line-height: 1.9;
 }
 
 /* 안내 문구 박스 */
@@ -109,7 +106,7 @@ input.sh-num:focus { outline: none; border-color: #4a90d9; }
 <div class="policy-grid">
 
   <!-- 배송 템플릿 선택 (권한 있는 경우만 노출) -->
-  <div class="policy-row" id="row-tmpl" style="">
+  <div class="policy-row" id="row-tmpl">
     <div class="policy-label">배송 템플릿 선택</div>
     <div class="policy-content">
       <div class="tmpl-tab-row">
@@ -130,13 +127,13 @@ input.sh-num:focus { outline: none; border-color: #4a90d9; }
     <div class="policy-content">
 
       <!-- 배송템플릿 있음 -->
-      <div id="lead-with-tmpl" style="">
+      <div id="lead-with-tmpl">
 
         <!-- 입력란 -->
         <div class="lead-input-row">
-          <input class="sh-num" type="number" id="lead-inp-t" min="1" max="5" placeholder=" ">
+          <input class="sh-num" type="number" id="lead-inp-t" min="1" max="5" placeholder="미입력" />
           <span class="unit">일</span>
-          <span class="input-hint">(1~5일 입력 가능)</span>
+          <span class="input-hint">(1~5일, 미입력 시 기본 배송정책 출고소요일 적용)</span>
         </div>
 
         <!-- 우선순위 -->
@@ -147,31 +144,31 @@ input.sh-num:focus { outline: none; border-color: #4a90d9; }
               <span class="num">1</span><span class="plbl">배송 템플릿</span>
             </div>
             <span class="p-arr">›</span>
-            <div class="p-step highlight">
+            <div class="p-step">
               <span class="num">2</span><span class="plbl">상품별 출고소요일</span>
             </div>
             <span class="p-arr">›</span>
-            <div class="p-step highlight">
+            <div class="p-step">
               <span class="num">3</span><span class="plbl">기본 배송정책</span>
             </div>
           </div>
-          <!-- 보조 설명 (기존 1번 영역 → 우선순위 하단으로) -->
+          <!-- 보조 설명 텍스트 -->
           <div class="priority-footnote">
-            · 배송 템플릿을 지원하는 제휴몰: <span class="tag">배송 템플릿</span>의 출고소요일 우선 적용<br>
-            · 배송 템플릿을 지원하지 않는 제휴몰: <span class="tag">상품별 출고소요일</span> 또는 <span class="tag">기본 배송정책</span>  출고소요일 적용
+            1. 배송템플릿 적용 제휴몰(옥션, 지마켓, 11번가, 롯데ON, 쿠팡)은 ①배송 템플릿 → ②상품별 출고소요일 → ③기본 배송정책 순으로 적용됩니다.<br>
+            2. 1항에 명시된 곳을 제외한 그 외 제휴몰은 ①상품별 출고소요일 → ②기본 배송정책 순으로 적용됩니다.
           </div>
         </div>
 
       </div>
 
       <!-- 배송템플릿 없음 -->
-      <div id="lead-no-tmpl" style="display: none;">
+      <div id="lead-no-tmpl" style="display:none;">
 
         <!-- 입력란 -->
         <div class="lead-input-row">
-          <input class="sh-num" type="number" id="lead-inp-n" min="1" max="5" placeholder=" ">
+          <input class="sh-num" type="number" id="lead-inp-n" min="1" max="5" placeholder="미입력" />
           <span class="unit">일</span>
-          <span class="input-hint">(1~5일 입력 가능)</span>
+          <span class="input-hint">(1~5일, 미입력 시 기본 배송정책 출고소요일 적용)</span>
         </div>
 
         <!-- 우선순위 -->
@@ -182,9 +179,12 @@ input.sh-num:focus { outline: none; border-color: #4a90d9; }
               <span class="num">1</span><span class="plbl">상품별 출고소요일</span>
             </div>
             <span class="p-arr">›</span>
-            <div class="p-step highlight">
+            <div class="p-step">
               <span class="num">2</span><span class="plbl">기본 배송정책</span>
             </div>
+          </div>
+          <div class="priority-footnote">
+            배송템플릿 미사용 제휴몰은 ①상품별 출고소요일 → ②기본 배송정책 순으로 적용됩니다.
           </div>
         </div>
 
@@ -197,7 +197,7 @@ input.sh-num:focus { outline: none; border-color: #4a90d9; }
           <span class="notice-header-text">출고소요일 설정 전 꼭 확인하세요</span>
           <span class="notice-toggle">접기 ▲</span>
         </div>
-        <div class="notice-body" style="display: block;">
+        <div class="notice-body">
           <ul class="notice-list">
             <li class="notice-item">
               <span class="ni-icon info">●</span>
@@ -205,11 +205,11 @@ input.sh-num:focus { outline: none; border-color: #4a90d9; }
             </li>
             <li class="notice-item">
               <span class="ni-icon neutral">●</span>
-              <span>외부 솔루션(플레이오토,사방넷 등)으로 주문 처리 시에는 <strong>상품에 설정된 출고소요일을 기준으로 발송예정일</strong>이 등록됩니다.</span>
+              <span>외부 솔루션(플레이오토, 사방넷 등)으로 주문 처리 시에는 <strong>상품에 설정된 출고소요일을 기준으로 발송예정일</strong>이 등록됩니다.</span>
             </li>
             <li class="notice-item">
               <span class="ni-icon warn">▲</span>
-              <span>상품에 설정된 출고소요일과 관계없이 주문 처리 시의 <strong>표준발송기한은 운영정책에 따라 적용</strong>됩니다. (주문일 +2영일) </span>
+              <span>상품에 설정된 출고소요일과 관계없이 주문 처리 시의 <strong>표준발송기한은 운영정책에 따라 적용</strong>됩니다. (주문일 +2영업일)</span>
             </li>
           </ul>
         </div>
@@ -251,6 +251,5 @@ function toggleNotice(header) {
   toggle.textContent = open ? '펼치기 ▼' : '접기 ▲';
 }
 </script>
-
-
-</body></html>
+</body>
+</html>
