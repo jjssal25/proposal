@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>셀러허브 파트너스 - 기본관리</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background: #F4F5F7; }
+  .canvas { width: 1920px; height: 1080px; position: relative; background: #F4F5F7; overflow: hidden; }
+
+  .topbar { height: 64px; background: #FFFFFF; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; padding: 0 32px; gap: 40px; }
+  .logo { height: 28px; }
+  .gnb { display: flex; gap: 8px; }
+  .gnb a { font-size: 15px; color: #6B7280; text-decoration: none; padding: 10px 14px; border-radius: 6px; }
+  .gnb a.active { color: #3355FF; font-weight: 600; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: #D1D5DB; }
+
+  .layout { display: flex; height: calc(1080px - 64px); }
+  .sidebar { width: 220px; background: #1F2430; flex-shrink: 0; padding: 24px 0; }
+  .sidebar-title { font-size: 13px; color: #8B92A5; padding: 0 24px 12px; font-weight: 600; }
+  .sidebar a { display: block; padding: 12px 24px; font-size: 14px; color: #C4C9D4; text-decoration: none; }
+  .sidebar a.active { background: #3355FF; color: #FFFFFF; font-weight: 600; }
+
+  .main { flex: 1; padding: 32px 40px; overflow: hidden; }
+  .page-title { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+  .page-sub { font-size: 13px; color: #9CA3AF; margin-bottom: 24px; }
+
+  .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; padding: 24px; }
+  .card-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 16px; }
+
+  .agree-item { display: flex; align-items: center; justify-content: space-between; border: 1px solid #E5E7EB; border-radius: 8px; padding: 14px 18px; margin-bottom: 10px; }
+  .agree-item:last-child { margin-bottom: 0; }
+  .agree-left { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #111827; }
+  .check-icon { width: 18px; height: 18px; border-radius: 50%; background: #16834C; color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+  .agree-status { font-size: 12px; color: #16834C; font-weight: 600; }
+
+  .info-table { width: 100%; border-collapse: collapse; }
+  .info-table td { font-size: 13px; padding: 12px 0; border-bottom: 1px solid #F1F2F4; vertical-align: top; }
+  .info-table tr:last-child td { border-bottom: none; }
+  .info-label { color: #6B7280; width: 130px; }
+  .info-value { color: #111827; font-weight: 500; }
+  .lock-tag { font-size: 11px; color: #9CA3AF; font-weight: 400; margin-left: 6px; }
+
+  .status-pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 6px; background: #E7F7ED; color: #16834C; }
+
+  .full-card { margin-top: 24px; }
+  .doc-row { display: flex; gap: 24px; }
+  .doc-field { flex: 1; }
+  .doc-field label { display: block; font-size: 12px; color: #6B7280; margin-bottom: 8px; }
+  .doc-box { border: 1px dashed #D1D5DB; border-radius: 8px; height: 110px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #9CA3AF; }
+  .file-chip { border: 1px solid #D1D5DB; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #374151; height: 110px; display: flex; align-items: center; }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <div class="topbar">
+    <img class="logo" src="sellerhub_logo.svg" alt="셀러허브">
+    <div class="gnb">
+      <a href="01_basic.html" class="active">기본관리</a>
+      <a href="02_members.html">멤버 현황</a>
+      <a href="03_reward.html">리워드 정산내역</a>
+    </div>
+    <div class="topbar-right">
+      <span style="font-size:13px; color:#374151;">㈜파트너스 1호점</span>
+      <div class="avatar"></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-title">파트너스 관리</div>
+      <a href="01_basic.html" class="active">기본관리</a>
+      <a href="02_members.html">멤버 현황</a>
+      <a href="03_reward.html">리워드 정산내역</a>
+    </div>
+
+    <div class="main">
+      <div class="page-title">기본관리</div>
+      <div class="page-sub">파트너스 이용약관 동의 현황과 계약 정보를 확인할 수 있습니다.</div>
+
+      <div class="card" style="margin-bottom:24px;">
+        <div class="card-title">셀러허브 파트너스 이용약관</div>
+        <div class="agree-item">
+          <div class="agree-left"><span class="check-icon">✓</span>셀러허브 파트너스 운영정책</div>
+          <span class="agree-status">동의하셨습니다</span>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div class="card">
+          <div class="card-title">파트너 정보</div>
+          <table class="info-table">
+            <tr><td class="info-label">고유 아이디</td><td class="info-value">2208160348</td></tr>
+            <tr><td class="info-label">대표자명</td><td class="info-value">홍길동<span class="lock-tag">수정 제한 · 고객센터 문의</span></td></tr>
+            <tr><td class="info-label">상호명</td><td class="info-value">㈜파트너스 1호점</td></tr>
+            <tr><td class="info-label">사업자등록번호</td><td class="info-value">123-45-67890<span class="lock-tag">수정 불가</span></td></tr>
+            <tr><td class="info-label">사업자 계좌</td><td class="info-value">국민은행 ****-1234<span class="lock-tag">수정 제한</span></td></tr>
+            <tr><td class="info-label">휴대폰 번호</td><td class="info-value">010-****-5678<span class="lock-tag" style="color:#16834C;">인증완료</span></td></tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">계약 정보</div>
+          <table class="info-table">
+            <tr><td class="info-label">플랜</td><td class="info-value">본사</td></tr>
+            <tr><td class="info-label">계약 상태</td><td class="info-value"><span class="status-pill">계약완료</span></td></tr>
+            <tr><td class="info-label">계약 시작일</td><td class="info-value">2026년 06월 30일</td></tr>
+            <tr><td class="info-label">관리 멤버 수</td><td class="info-value">24명</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="card full-card">
+        <div class="card-title">제출 서류</div>
+        <div class="doc-row">
+          <div class="doc-field">
+            <label>사업자등록증 사본</label>
+            <div class="file-chip">📄 (HC)사업자등록증_20240216.pdf</div>
+          </div>
+          <div class="doc-field">
+            <label>통장 사본</label>
+            <div class="doc-box">등록된 파일 없음</div>
+          </div>
+          <div class="doc-field">
+            <label>서명</label>
+            <div class="doc-box">서명 이미지</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
