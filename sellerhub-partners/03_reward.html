@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>셀러허브 파트너스 - 리워드 정산내역</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background: #F4F5F7; }
+  .canvas { width: 1920px; height: 1080px; position: relative; background: #F4F5F7; overflow: hidden; }
+
+  .topbar { height: 64px; background: #FFFFFF; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; padding: 0 32px; gap: 40px; }
+  .logo { height: 28px; }
+  .gnb { display: flex; gap: 8px; }
+  .gnb a { font-size: 15px; color: #6B7280; text-decoration: none; padding: 10px 14px; border-radius: 6px; }
+  .gnb a.active { color: #3355FF; font-weight: 600; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: #D1D5DB; }
+
+  .layout { display: flex; height: calc(1080px - 64px); }
+  .sidebar { width: 220px; background: #1F2430; flex-shrink: 0; padding: 24px 0; }
+  .sidebar-title { font-size: 13px; color: #8B92A5; padding: 0 24px 12px; font-weight: 600; }
+  .sidebar a { display: block; padding: 12px 24px; font-size: 14px; color: #C4C9D4; text-decoration: none; }
+  .sidebar a.active { background: #3355FF; color: #FFFFFF; font-weight: 600; }
+
+  .main { flex: 1; padding: 32px 40px; overflow: hidden; }
+  .page-title { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+  .page-sub { font-size: 13px; color: #9CA3AF; margin-bottom: 24px; }
+
+  .filter-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; padding: 20px 24px; margin-bottom: 20px; }
+  .filter-row { display: flex; align-items: flex-end; gap: 24px; }
+  .filter-group label { display: block; font-size: 12px; color: #6B7280; margin-bottom: 6px; }
+  .filter-group select, .filter-group input { height: 38px; border: 1px solid #D1D5DB; border-radius: 6px; padding: 0 12px; font-size: 13px; color: #111827; background: #FFFFFF; }
+  .search-btn { height: 38px; padding: 0 24px; background: #3355FF; color: #FFFFFF; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; margin-left: auto; }
+
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+  .summary-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; padding: 20px 22px; }
+  .summary-label { font-size: 12px; color: #9CA3AF; margin-bottom: 8px; }
+  .summary-value { font-size: 22px; font-weight: 700; color: #111827; }
+  .summary-value.accent { color: #3355FF; }
+
+  .table-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; overflow: hidden; }
+  .table-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid #F1F2F4; }
+  .result-count { font-size: 13px; color: #374151; }
+  .download-btn { font-size: 12px; color: #374151; border: 1px solid #D1D5DB; border-radius: 6px; padding: 7px 14px; background: #FFFFFF; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #F9FAFB; font-size: 12px; color: #6B7280; font-weight: 600; text-align: left; padding: 12px 24px; border-bottom: 1px solid #E5E7EB; }
+  td { font-size: 13px; color: #1F2937; padding: 14px 24px; border-bottom: 1px solid #F1F2F4; }
+  tr:last-child td { border-bottom: none; }
+  td.num { text-align: right; }
+  th.num { text-align: right; }
+  .reward-amt { font-weight: 700; color: #3355FF; }
+
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; }
+  .badge-success { background: #E7F7ED; color: #16834C; }
+  .badge-warn { background: #FFF4E5; color: #B45309; }
+
+  .note { font-size: 12px; color: #9CA3AF; padding: 16px 24px; background: #FAFBFC; border-top: 1px solid #F1F2F4; }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <div class="topbar">
+    <img class="logo" src="sellerhub_logo.svg" alt="셀러허브">
+    <div class="gnb">
+      <a href="01_basic.html">기본관리</a>
+      <a href="02_members.html">멤버 현황</a>
+      <a href="03_reward.html" class="active">리워드 정산내역</a>
+    </div>
+    <div class="topbar-right">
+      <span style="font-size:13px; color:#374151;">㈜파트너스 1호점</span>
+      <div class="avatar"></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-title">파트너스 관리</div>
+      <a href="01_basic.html">기본관리</a>
+      <a href="02_members.html">멤버 현황</a>
+      <a href="03_reward.html" class="active">리워드 정산내역</a>
+    </div>
+
+    <div class="main">
+      <div class="page-title">리워드 정산내역</div>
+      <div class="page-sub">멤버 매출을 기준으로 산정된 월별 리워드 내역과 지급 일정을 확인할 수 있습니다.</div>
+
+      <div class="filter-card">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>멤버 선택</label>
+            <select style="width:200px;"><option>멤버 전체</option></select>
+          </div>
+          <div class="filter-group">
+            <label>조회 기간</label>
+            <input type="text" value="2026.01 ~ 2026.06" style="width:200px;">
+          </div>
+          <button class="search-btn">검색</button>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-label">조회기간 등록 판매가 합계</div>
+          <div class="summary-value">38,250,000원</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">조회기간 정산 기준액</div>
+          <div class="summary-value">36,840,000원</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">조회기간 리워드 합계</div>
+          <div class="summary-value accent">257,880원</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">정산 예정 리워드</div>
+          <div class="summary-value accent">84,000원</div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="result-count">전체 6건</div>
+          <button class="download-btn">⬇ 리스트 다운로드</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:14%;">매출 발생월</th>
+              <th class="num" style="width:18%;">등록 판매가 합계</th>
+              <th class="num" style="width:16%;">취소/반품액</th>
+              <th class="num" style="width:16%;">정산 기준액</th>
+              <th class="num" style="width:14%;">리워드 금액</th>
+              <th style="width:12%;">지급 예정일</th>
+              <th style="width:10%;">정산 상태</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2026.06</td>
+              <td class="num">12,450,000원</td>
+              <td class="num">450,000원</td>
+              <td class="num">12,000,000원</td>
+              <td class="num reward-amt">84,000원</td>
+              <td>2026.08.31</td>
+              <td><span class="badge badge-warn">정산 예정</span></td>
+            </tr>
+            <tr>
+              <td>2026.05</td>
+              <td class="num">9,820,000원</td>
+              <td class="num">220,000원</td>
+              <td class="num">9,600,000원</td>
+              <td class="num reward-amt">67,200원</td>
+              <td>2026.07.31</td>
+              <td><span class="badge badge-success">지급완료</span></td>
+            </tr>
+            <tr>
+              <td>2026.04</td>
+              <td class="num">7,150,000원</td>
+              <td class="num">180,000원</td>
+              <td class="num">6,970,000원</td>
+              <td class="num reward-amt">48,790원</td>
+              <td>2026.06.30</td>
+              <td><span class="badge badge-success">지급완료</span></td>
+            </tr>
+            <tr>
+              <td>2026.03</td>
+              <td class="num">5,430,000원</td>
+              <td class="num">90,000원</td>
+              <td class="num">5,340,000원</td>
+              <td class="num reward-amt">37,380원</td>
+              <td>2026.05.31</td>
+              <td><span class="badge badge-success">지급완료</span></td>
+            </tr>
+            <tr>
+              <td>2026.02</td>
+              <td class="num">2,100,000원</td>
+              <td class="num">40,000원</td>
+              <td class="num">2,060,000원</td>
+              <td class="num reward-amt">14,420원</td>
+              <td>2026.04.30</td>
+              <td><span class="badge badge-success">지급완료</span></td>
+            </tr>
+            <tr>
+              <td>2026.01</td>
+              <td class="num">1,300,000원</td>
+              <td class="num">0원</td>
+              <td class="num">1,300,000원</td>
+              <td class="num reward-amt">9,100원</td>
+              <td>2026.03.31</td>
+              <td><span class="badge badge-success">지급완료</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note">※ 리워드 = 정산 기준액(취소/반품 반영) × 리워드율(0.7%). 해당월 매출은 공급사 정산 완료 후(M+1월 초) 안내되며, 세금계산서 발급 익월 말일에 지급됩니다.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
