@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>셀러허브 파트너스 - 멤버 현황</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background: #F4F5F7; }
+  .canvas { width: 1920px; height: 1080px; position: relative; background: #F4F5F7; overflow: hidden; }
+
+  /* Top nav */
+  .topbar { height: 64px; background: #FFFFFF; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; padding: 0 32px; gap: 40px; }
+  .logo { height: 28px; }
+  .gnb { display: flex; gap: 8px; }
+  .gnb a { font-size: 15px; color: #6B7280; text-decoration: none; padding: 10px 14px; border-radius: 6px; }
+  .gnb a.active { color: #3355FF; font-weight: 600; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: #D1D5DB; }
+
+  /* Side nav */
+  .layout { display: flex; height: calc(1080px - 64px); }
+  .sidebar { width: 220px; background: #1F2430; flex-shrink: 0; padding: 24px 0; }
+  .sidebar-title { font-size: 13px; color: #8B92A5; padding: 0 24px 12px; font-weight: 600; }
+  .sidebar a { display: block; padding: 12px 24px; font-size: 14px; color: #C4C9D4; text-decoration: none; }
+  .sidebar a.active { background: #3355FF; color: #FFFFFF; font-weight: 600; }
+
+  .main { flex: 1; padding: 32px 40px; overflow: hidden; }
+  .page-title { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+  .page-sub { font-size: 13px; color: #9CA3AF; margin-bottom: 24px; }
+
+  .filter-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; padding: 20px 24px; margin-bottom: 20px; }
+  .filter-row { display: flex; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+  .filter-group label { display: block; font-size: 12px; color: #6B7280; margin-bottom: 6px; }
+  .filter-group select, .filter-group input { height: 38px; border: 1px solid #D1D5DB; border-radius: 6px; padding: 0 12px; font-size: 13px; color: #111827; background: #FFFFFF; }
+  .date-range { display: flex; align-items: center; gap: 8px; }
+  .date-range input { width: 140px; }
+  .quick-range { display: flex; gap: 6px; }
+  .quick-btn { height: 38px; padding: 0 14px; font-size: 12px; border: 1px solid #D1D5DB; border-radius: 6px; background: #FFFFFF; color: #6B7280; }
+  .quick-btn.selected { border-color: #3355FF; color: #3355FF; background: #EEF2FF; font-weight: 600; }
+  .search-btn { height: 38px; padding: 0 24px; background: #3355FF; color: #FFFFFF; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; margin-left: auto; }
+  .filter-hint { font-size: 12px; color: #9CA3AF; margin-top: 12px; }
+
+  .table-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; overflow: hidden; }
+  .table-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid #F1F2F4; }
+  .result-count { font-size: 13px; color: #374151; }
+  .result-count b { color: #3355FF; }
+  .download-btn { font-size: 12px; color: #374151; border: 1px solid #D1D5DB; border-radius: 6px; padding: 7px 14px; background: #FFFFFF; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #F9FAFB; font-size: 12px; color: #6B7280; font-weight: 600; text-align: left; padding: 12px 24px; border-bottom: 1px solid #E5E7EB; }
+  td { font-size: 13px; color: #1F2937; padding: 14px 24px; border-bottom: 1px solid #F1F2F4; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAFBFF; }
+
+  .badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; }
+  .badge-success { background: #E7F7ED; color: #16834C; }
+  .badge-progress { background: #EAF0FF; color: #3355FF; }
+  .badge-warn { background: #FFF4E5; color: #B45309; }
+  .badge-muted { background: #F1F2F4; color: #6B7280; }
+  .badge-danger { background: #FDECEC; color: #C0392B; }
+
+  .pagination { display: flex; justify-content: center; gap: 4px; padding: 18px 0; }
+  .page-num { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #6B7280; border-radius: 6px; }
+  .page-num.active { background: #3355FF; color: #FFFFFF; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <div class="topbar">
+    <img class="logo" src="sellerhub_logo.svg" alt="셀러허브">
+    <div class="gnb">
+      <a href="01_basic.html">기본관리</a>
+      <a href="02_members.html" class="active">멤버 현황</a>
+      <a href="03_reward.html">리워드 정산내역</a>
+    </div>
+    <div class="topbar-right">
+      <span style="font-size:13px; color:#374151;">㈜파트너스 1호점</span>
+      <div class="avatar"></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-title">파트너스 관리</div>
+      <a href="01_basic.html">기본관리</a>
+      <a href="02_members.html" class="active">멤버 현황</a>
+      <a href="03_reward.html">리워드 정산내역</a>
+    </div>
+
+    <div class="main">
+      <div class="page-title">멤버 현황</div>
+      <div class="page-sub">내 계정에 연결된 멤버(공급사)의 가입 및 계약 상태를 확인할 수 있습니다.</div>
+
+      <div class="filter-card">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>멤버명 검색</label>
+            <input type="text" placeholder="멤버명(공급사명) 입력" style="width:220px;">
+          </div>
+          <div class="filter-group">
+            <label>연계 상태</label>
+            <select style="width:170px;">
+              <option>전체</option>
+              <option>계약완료</option>
+              <option>계약중</option>
+              <option>퇴점</option>
+              <option>계약일시정지</option>
+              <option>일시정지 철회 신청</option>
+              <option>미계약</option>
+              <option>휴면</option>
+              <option>기본설정 완료</option>
+              <option>상품등록</option>
+              <option>폐업</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>가입일</label>
+            <div class="date-range">
+              <input type="text" value="2026.01.01">
+              <span style="color:#9CA3AF;">~</span>
+              <input type="text" value="2026.06.30">
+            </div>
+          </div>
+          <div class="filter-group">
+            <label>&nbsp;</label>
+            <div class="quick-range">
+              <button class="quick-btn">1개월</button>
+              <button class="quick-btn">3개월</button>
+              <button class="quick-btn selected">6개월</button>
+              <button class="quick-btn">1년</button>
+              <button class="quick-btn">전체</button>
+            </div>
+          </div>
+          <button class="search-btn">검색</button>
+        </div>
+        <div class="filter-hint">※ 가입일 기준 기본 조회 기간은 최근 6개월입니다.</div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="result-count">전체 <b>24</b>건</div>
+          <button class="download-btn">⬇ 리스트 다운로드</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:18%;">멤버명(공급사)</th>
+              <th style="width:12%;">대표자명</th>
+              <th style="width:14%;">가입일</th>
+              <th style="width:16%;">연계 상태</th>
+              <th style="width:14%;">승인 상품 수</th>
+              <th style="width:26%;">담당자 연락처</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>㈜헬로키친</td><td>김민수</td><td>2026.01.12</td><td><span class="badge badge-success">계약완료</span></td><td>106</td><td>010-1234-5678</td></tr>
+            <tr><td>대성식품㈜</td><td>이정훈</td><td>2026.02.03</td><td><span class="badge badge-progress">계약중</span></td><td>14</td><td>010-2222-3333</td></tr>
+            <tr><td>㈜미소상회</td><td>박서연</td><td>2026.03.21</td><td><span class="badge badge-warn">상품등록</span></td><td>0</td><td>010-4444-5555</td></tr>
+            <tr><td>강남청과㈜</td><td>최도윤</td><td>2025.12.02</td><td><span class="badge badge-muted">휴면</span></td><td>32</td><td>010-7777-8888</td></tr>
+            <tr><td>한빛유통㈜</td><td>정수아</td><td>2026.01.28</td><td><span class="badge badge-success">계약완료</span></td><td>58</td><td>010-3333-1212</td></tr>
+            <tr><td>㈜그린푸드</td><td>오태영</td><td>2026.04.09</td><td><span class="badge badge-warn">기본설정 완료</span></td><td>3</td><td>010-9988-7766</td></tr>
+            <tr><td>참좋은식품㈜</td><td>임하늘</td><td>2026.02.17</td><td><span class="badge badge-danger">계약일시정지</span></td><td>21</td><td>010-5566-7788</td></tr>
+            <tr><td>㈜동방마트</td><td>송지호</td><td>2025.11.05</td><td><span class="badge badge-muted">퇴점</span></td><td>0</td><td>010-1111-2222</td></tr>
+            <tr><td>해담식품㈜</td><td>강민재</td><td>2026.05.14</td><td><span class="badge badge-progress">계약중</span></td><td>9</td><td>010-6655-4433</td></tr>
+            <tr><td>㈜이든상사</td><td>윤서진</td><td>2026.03.02</td><td><span class="badge badge-success">계약완료</span></td><td>77</td><td>010-2244-6688</td></tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <div class="page-num active">1</div>
+          <div class="page-num">2</div>
+          <div class="page-num">3</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
