@@ -101,19 +101,24 @@
           </div>
           <div class="filter-group">
             <label>조회월</label>
-            <input type="text" value="2026.06" style="width:140px;">
+            <div style="display:flex; gap:6px; align-items:center;">
+              <select id="sel-year" style="width:100px;"></select>
+              <span style="font-size:13px; color:#6B7280;">년</span>
+              <select id="sel-month" style="width:80px;"></select>
+              <span style="font-size:13px; color:#6B7280;">월</span>
+            </div>
           </div>
           <div class="filter-group">
             <label>&nbsp;</label>
             <div class="quick-range">
-              <button class="quick-btn">지난달</button>
-              <button class="quick-btn selected">이번달</button>
+              <button class="quick-btn" onclick="setLastMonth()">지난달</button>
+              <button class="quick-btn selected" id="btn-thismonth" onclick="setThisMonth()">이번달</button>
             </div>
           </div>
-          <button class="reset-btn">초기화</button>
+          <button class="reset-btn" onclick="setThisMonth()">초기화</button>
           <button class="search-btn">검색</button>
         </div>
-        <div class="filter-hint">※ 매일 새벽 2시에 전일 통계데이터가 생성됩니다. 조회 단위는 월입니다.</div>
+        <div class="filter-hint">※ 실시간 기준의 조회 데이터로, 최종 정산 시 정산기준액과는 차이가 발생할 수 있습니다.</div>
       </div>
 
       <div class="table-card">
@@ -149,5 +154,62 @@
   </div>
 
 </div>
+
+<script>
+(function() {
+  const now = new Date();
+  const curYear = now.getFullYear();
+  const curMonth = now.getMonth() + 1;
+
+  // 전월 계산
+  const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const prevYear = prevDate.getFullYear();
+  const prevMonth = prevDate.getMonth() + 1;
+
+  // 연도: 3년 전 ~ 현재 년도
+  const selYear = document.getElementById('sel-year');
+  for (let y = curYear - 3; y <= curYear; y++) {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    if (y === prevYear) opt.selected = true;
+    selYear.appendChild(opt);
+  }
+
+  // 월: 1 ~ 12
+  const selMonth = document.getElementById('sel-month');
+  for (let m = 1; m <= 12; m++) {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = String(m).padStart(2, '0');
+    if (m === prevMonth) opt.selected = true;
+    selMonth.appendChild(opt);
+  }
+
+  function updateQuickBtn() {
+    const y = parseInt(selYear.value);
+    const m = parseInt(selMonth.value);
+    const btn = document.getElementById('btn-thismonth');
+    btn.classList.toggle('selected', y === curYear && m === curMonth);
+  }
+  selYear.addEventListener('change', updateQuickBtn);
+  selMonth.addEventListener('change', updateQuickBtn);
+})();
+
+function setThisMonth() {
+  const now = new Date();
+  document.getElementById('sel-year').value = now.getFullYear();
+  document.getElementById('sel-month').value = now.getMonth() + 1;
+  document.getElementById('btn-thismonth').classList.add('selected');
+}
+
+function setLastMonth() {
+  const now = new Date();
+  const d = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  document.getElementById('sel-year').value = d.getFullYear();
+  document.getElementById('sel-month').value = d.getMonth() + 1;
+  document.getElementById('btn-thismonth').classList.remove('selected');
+}
+</script>
 </body>
 </html>
