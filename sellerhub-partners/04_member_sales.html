@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>셀러허브 파트너스 - 멤버별 매출조회</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; background: #F4F5F7; }
+  .canvas { width: 1920px; height: 1080px; position: relative; background: #F4F5F7; overflow: hidden; }
+
+  .topbar { height: 64px; background: #FFFFFF; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; padding: 0 32px; gap: 40px; }
+  .logo { height: 28px; }
+  .gnb { display: flex; gap: 8px; }
+  .gnb a { font-size: 15px; color: #6B7280; text-decoration: none; padding: 10px 14px; border-radius: 6px; }
+  .gnb a.active { color: #3355FF; font-weight: 600; }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: #D1D5DB; }
+
+  .layout { display: flex; height: calc(1080px - 64px); }
+  .sidebar { width: 220px; background: #1F2430; flex-shrink: 0; padding: 24px 0; }
+  .sidebar-title { font-size: 13px; color: #8B92A5; padding: 0 24px 12px; font-weight: 600; }
+  .sidebar a { display: block; padding: 12px 24px; font-size: 14px; color: #C4C9D4; text-decoration: none; }
+  .sidebar a.active { background: #3355FF; color: #FFFFFF; font-weight: 600; }
+
+  .main { flex: 1; padding: 32px 40px; overflow: hidden; }
+  .page-title { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+  .page-sub { font-size: 13px; color: #9CA3AF; margin-bottom: 24px; }
+
+  .filter-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; padding: 20px 24px; margin-bottom: 20px; }
+  .filter-row { display: flex; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+  .filter-group label { display: block; font-size: 12px; color: #6B7280; margin-bottom: 6px; }
+  .filter-group select, .filter-group input { height: 38px; border: 1px solid #D1D5DB; border-radius: 6px; padding: 0 12px; font-size: 13px; color: #111827; background: #FFFFFF; }
+  .quick-range { display: flex; gap: 6px; }
+  .quick-btn { height: 38px; padding: 0 14px; font-size: 12px; border: 1px solid #D1D5DB; border-radius: 6px; background: #FFFFFF; color: #6B7280; }
+  .quick-btn.selected { border-color: #3355FF; color: #3355FF; background: #EEF2FF; font-weight: 600; }
+  .search-btn { height: 38px; padding: 0 24px; background: #3355FF; color: #FFFFFF; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; margin-left: auto; }
+  .reset-btn { height: 38px; padding: 0 18px; background: #FFFFFF; color: #6B7280; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 13px; }
+  .filter-hint { font-size: 12px; color: #9CA3AF; margin-top: 12px; }
+
+  .table-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; overflow: hidden; }
+  .table-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid #F1F2F4; }
+  .result-count { font-size: 13px; color: #374151; }
+  .result-count b { color: #3355FF; }
+  .download-btn { font-size: 12px; color: #374151; border: 1px solid #D1D5DB; border-radius: 6px; padding: 7px 14px; background: #FFFFFF; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #F9FAFB; font-size: 12px; color: #6B7280; font-weight: 600; text-align: left; padding: 12px 20px; border-bottom: 1px solid #E5E7EB; }
+  td { font-size: 13px; color: #1F2937; padding: 13px 20px; border-bottom: 1px solid #F1F2F4; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAFBFF; }
+  th.num, td.num { text-align: right; }
+
+  tr.total-row td { background: #F4F6FF; font-weight: 700; color: #111827; }
+  tr.total-row:hover td { background: #F4F6FF; }
+
+  .note { font-size: 12px; color: #9CA3AF; padding: 14px 24px; background: #FAFBFC; border-top: 1px solid #F1F2F4; }
+</style>
+</head>
+<body>
+<div class="canvas">
+
+  <div class="topbar">
+    <img class="logo" src="sellerhub_logo.svg" alt="셀러허브">
+    <div class="gnb">
+      <a href="01_basic.html">기본관리</a>
+      <a href="02_members.html">멤버 현황</a>
+      <a href="04_member_sales.html" class="active">멤버별 매출조회</a>
+      <a href="03_reward.html">리워드 정산내역</a>
+    </div>
+    <div class="topbar-right">
+      <span style="font-size:13px; color:#374151;">㈜파트너스 1호점</span>
+      <div class="avatar"></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-title">파트너스 관리</div>
+      <a href="01_basic.html">기본관리</a>
+      <a href="02_members.html">멤버 현황</a>
+      <a href="04_member_sales.html" class="active">멤버별 매출조회</a>
+      <a href="03_reward.html">리워드 정산내역</a>
+    </div>
+
+    <div class="main">
+      <div class="page-title">멤버별 매출조회</div>
+      <div class="page-sub">연결된 멤버(공급사)의 월별 주문·취소 현황을 확인할 수 있습니다.</div>
+
+      <div class="filter-card">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label>멤버 선택</label>
+            <select style="width:200px;">
+              <option>전체</option>
+              <option>㈜헬로키친</option>
+              <option>대성식품㈜</option>
+              <option>㈜미소상회</option>
+              <option>강남청과㈜</option>
+              <option>한빛유통㈜</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>조회월</label>
+            <input type="text" value="2026.06" style="width:140px;">
+          </div>
+          <div class="filter-group">
+            <label>&nbsp;</label>
+            <div class="quick-range">
+              <button class="quick-btn">지난달</button>
+              <button class="quick-btn selected">이번달</button>
+            </div>
+          </div>
+          <button class="reset-btn">초기화</button>
+          <button class="search-btn">검색</button>
+        </div>
+        <div class="filter-hint">※ 매일 새벽 2시에 전일 통계데이터가 생성됩니다. 조회 단위는 월입니다.</div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div class="result-count">조회월 <b>2026.06</b> · 멤버 <b>5</b>건</div>
+          <button class="download-btn">⬇ 리스트 다운로드</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:20%;">멤버명(공급사)</th>
+              <th class="num" style="width:11%;">주문건수</th>
+              <th class="num" style="width:11%;">주문수량</th>
+              <th class="num" style="width:15%;">상품판매총액</th>
+              <th class="num" style="width:11%;">취소건수</th>
+              <th class="num" style="width:11%;">취소수량</th>
+              <th class="num" style="width:13%;">상품취소총액</th>
+              <th class="num" style="width:13%;">총계</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>㈜헬로키친</td><td class="num">66</td><td class="num">88</td><td class="num">2,907,770원</td><td class="num">17</td><td class="num">19</td><td class="num">672,000원</td><td class="num">2,235,770원</td></tr>
+            <tr><td>대성식품㈜</td><td class="num">41</td><td class="num">53</td><td class="num">1,490,800원</td><td class="num">14</td><td class="num">14</td><td class="num">415,400원</td><td class="num">1,075,400원</td></tr>
+            <tr><td>㈜미소상회</td><td class="num">20</td><td class="num">25</td><td class="num">1,299,500원</td><td class="num">5</td><td class="num">5</td><td class="num">368,250원</td><td class="num">931,250원</td></tr>
+            <tr><td>강남청과㈜</td><td class="num">18</td><td class="num">19</td><td class="num">973,000원</td><td class="num">2</td><td class="num">3</td><td class="num">118,800원</td><td class="num">854,200원</td></tr>
+            <tr><td>한빛유통㈜</td><td class="num">12</td><td class="num">12</td><td class="num">1,041,100원</td><td class="num">5</td><td class="num">6</td><td class="num">232,800원</td><td class="num">808,300원</td></tr>
+            <tr class="total-row"><td>합계</td><td class="num">157</td><td class="num">197</td><td class="num">7,712,170원</td><td class="num">43</td><td class="num">47</td><td class="num">1,807,250원</td><td class="num">5,904,920원</td></tr>
+          </tbody>
+        </table>
+        <div class="note">※ 상품판매총액·상품취소총액은 배송비를 제외한 등록 판매가 기준입니다. 총계 = 상품판매총액 − 상품취소총액.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
