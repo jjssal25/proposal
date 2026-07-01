@@ -44,8 +44,8 @@
   .download-btn { font-size: 12px; color: #374151; border: 1px solid #D1D5DB; border-radius: 6px; padding: 7px 14px; background: #FFFFFF; }
 
   table { width: 100%; border-collapse: collapse; }
-  th { background: #F9FAFB; font-size: 12px; color: #6B7280; font-weight: 600; text-align: left; padding: 12px 24px; border-bottom: 1px solid #E5E7EB; }
-  td { font-size: 13px; color: #1F2937; padding: 14px 24px; border-bottom: 1px solid #F1F2F4; }
+  th { background: #F9FAFB; font-size: 12px; color: #6B7280; font-weight: 600; text-align: left; padding: 12px 22px; border-bottom: 1px solid #E5E7EB; }
+  td { font-size: 13px; color: #1F2937; padding: 14px 22px; border-bottom: 1px solid #F1F2F4; }
   tr:last-child td { border-bottom: none; }
   td.num { text-align: right; }
   th.num { text-align: right; }
@@ -55,7 +55,54 @@
   .badge-success { background: #E7F7ED; color: #16834C; }
   .badge-warn { background: #FFF4E5; color: #B45309; }
 
+  .detail-btn {
+    font-size: 12px; color: #3355FF; border: 1px solid #C7D2FE; border-radius: 6px;
+    padding: 6px 12px; background: #FFFFFF; cursor: pointer; white-space: nowrap;
+  }
+  .detail-btn:hover { background: #EEF2FF; }
+
   .note { font-size: 12px; color: #9CA3AF; padding: 16px 24px; background: #FAFBFC; border-top: 1px solid #F1F2F4; }
+
+  /* modal */
+  .modal-overlay {
+    display: none; position: absolute; inset: 0; background: rgba(17,24,39,0.45);
+    align-items: center; justify-content: center; z-index: 100;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    width: 980px; max-height: 760px; background: #FFFFFF; border-radius: 12px;
+    overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+  }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 28px; border-bottom: 1px solid #E5E7EB;
+  }
+  .modal-title { font-size: 17px; font-weight: 700; color: #111827; }
+  .modal-sub { font-size: 12px; color: #9CA3AF; margin-top: 2px; }
+  .modal-close { font-size: 18px; color: #9CA3AF; background: none; border: none; cursor: pointer; padding: 4px; }
+  .modal-close:hover { color: #374151; }
+
+  .modal-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; border-bottom: 1px solid #F1F2F4; }
+  .excel-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 600; color: #16834C; border: 1px solid #9AD3AE;
+    border-radius: 6px; padding: 8px 14px; background: #F0FBF4; cursor: pointer;
+  }
+  .excel-btn:hover { background: #E7F7ED; }
+
+  .modal-body { padding: 0 28px 24px; overflow-y: auto; }
+  .modal-body table th { padding: 11px 14px; }
+  .modal-body table td { padding: 12px 14px; }
+
+  .modal-foot {
+    padding: 16px 28px; border-top: 1px solid #E5E7EB;
+    display: flex; justify-content: flex-end; gap: 10px;
+  }
+  .modal-foot-btn {
+    font-size: 13px; padding: 9px 20px; border-radius: 6px; border: 1px solid #D1D5DB;
+    background: #FFFFFF; color: #374151; cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -66,6 +113,7 @@
     <div class="gnb">
       <a href="01_basic.html">기본관리</a>
       <a href="02_members.html">멤버 현황</a>
+      <a href="04_member_sales.html">멤버별 매출조회</a>
       <a href="03_reward.html" class="active">리워드 정산내역</a>
     </div>
     <div class="topbar-right">
@@ -79,10 +127,11 @@
       <div class="sidebar-title">파트너스 관리</div>
       <a href="01_basic.html">기본관리</a>
       <a href="02_members.html">멤버 현황</a>
+      <a href="04_member_sales.html">멤버별 매출조회</a>
       <a href="03_reward.html" class="active">리워드 정산내역</a>
     </div>
 
-    <div class="main">
+    <div class="main" style="position:relative;">
       <div class="page-title">리워드 정산내역</div>
       <div class="page-sub">멤버 매출을 기준으로 산정된 월별 리워드 내역과 지급 일정을 확인할 수 있습니다.</div>
 
@@ -127,13 +176,14 @@
         <table>
           <thead>
             <tr>
-              <th style="width:14%;">매출 발생월</th>
-              <th class="num" style="width:18%;">등록 판매가 합계</th>
-              <th class="num" style="width:16%;">취소/반품액</th>
-              <th class="num" style="width:16%;">정산 기준액</th>
-              <th class="num" style="width:14%;">리워드 금액</th>
-              <th style="width:12%;">지급 예정일</th>
-              <th style="width:10%;">정산 상태</th>
+              <th style="width:12%;">매출 발생월</th>
+              <th class="num" style="width:16%;">등록 판매가 합계</th>
+              <th class="num" style="width:14%;">취소/반품액</th>
+              <th class="num" style="width:14%;">정산 기준액</th>
+              <th class="num" style="width:12%;">리워드 금액</th>
+              <th style="width:11%;">지급 예정일</th>
+              <th style="width:9%;">정산 상태</th>
+              <th style="width:12%;"></th>
             </tr>
           </thead>
           <tbody>
@@ -145,6 +195,7 @@
               <td class="num reward-amt">84,000원</td>
               <td>2026.08.31</td>
               <td><span class="badge badge-warn">정산 예정</span></td>
+              <td><button class="detail-btn" onclick="openModal('2026.06')">상세내역 보기</button></td>
             </tr>
             <tr>
               <td>2026.05</td>
@@ -154,6 +205,7 @@
               <td class="num reward-amt">67,200원</td>
               <td>2026.07.31</td>
               <td><span class="badge badge-success">지급완료</span></td>
+              <td><button class="detail-btn" onclick="openModal('2026.05')">상세내역 보기</button></td>
             </tr>
             <tr>
               <td>2026.04</td>
@@ -163,6 +215,7 @@
               <td class="num reward-amt">48,790원</td>
               <td>2026.06.30</td>
               <td><span class="badge badge-success">지급완료</span></td>
+              <td><button class="detail-btn" onclick="openModal('2026.04')">상세내역 보기</button></td>
             </tr>
             <tr>
               <td>2026.03</td>
@@ -172,6 +225,7 @@
               <td class="num reward-amt">37,380원</td>
               <td>2026.05.31</td>
               <td><span class="badge badge-success">지급완료</span></td>
+              <td><button class="detail-btn" onclick="openModal('2026.03')">상세내역 보기</button></td>
             </tr>
             <tr>
               <td>2026.02</td>
@@ -181,6 +235,7 @@
               <td class="num reward-amt">14,420원</td>
               <td>2026.04.30</td>
               <td><span class="badge badge-success">지급완료</span></td>
+              <td><button class="detail-btn" onclick="openModal('2026.02')">상세내역 보기</button></td>
             </tr>
             <tr>
               <td>2026.01</td>
@@ -190,14 +245,67 @@
               <td class="num reward-amt">9,100원</td>
               <td>2026.03.31</td>
               <td><span class="badge badge-success">지급완료</span></td>
+              <td><button class="detail-btn" onclick="openModal('2026.01')">상세내역 보기</button></td>
             </tr>
           </tbody>
         </table>
         <div class="note">※ 리워드 = 정산 기준액(취소/반품 반영) × 리워드율(0.7%). 해당월 매출은 공급사 정산 완료 후(M+1월 초) 안내되며, 세금계산서 발급 익월 말일에 지급됩니다.</div>
       </div>
+
+      <!-- 상세내역 모달 -->
+      <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-box">
+          <div class="modal-header">
+            <div>
+              <div class="modal-title" id="modal-title">2026.06 리워드 상세내역</div>
+              <div class="modal-sub">멤버(공급사)별 정산 기준액과 리워드 산정 내역입니다.</div>
+            </div>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+          </div>
+          <div class="modal-toolbar">
+            <div style="font-size:13px; color:#374151;">멤버 <b id="modal-count">5</b>건</div>
+            <button class="excel-btn" onclick="alert('엑셀 다운로드 (프로토타입)')">⬇ 엑셀 다운로드</button>
+          </div>
+          <div class="modal-body">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:24%;">공급사명</th>
+                  <th class="num" style="width:19%;">등록 판매가</th>
+                  <th class="num" style="width:19%;">취소/반품액</th>
+                  <th class="num" style="width:19%;">정산 기준액</th>
+                  <th class="num" style="width:19%;">리워드 금액</th>
+                </tr>
+              </thead>
+              <tbody id="modal-table-body">
+                <tr><td>㈜헬로키친</td><td class="num">4,820,000원</td><td class="num">210,000원</td><td class="num">4,610,000원</td><td class="num reward-amt">32,270원</td></tr>
+                <tr><td>대성식품㈜</td><td class="num">2,950,000원</td><td class="num">95,000원</td><td class="num">2,855,000원</td><td class="num reward-amt">19,985원</td></tr>
+                <tr><td>㈜미소상회</td><td class="num">1,830,000원</td><td class="num">60,000원</td><td class="num">1,770,000원</td><td class="num reward-amt">12,390원</td></tr>
+                <tr><td>강남청과㈜</td><td class="num">1,650,000원</td><td class="num">45,000원</td><td class="num">1,605,000원</td><td class="num reward-amt">11,235원</td></tr>
+                <tr><td>한빛유통㈜</td><td class="num">1,200,000원</td><td class="num">40,000원</td><td class="num">1,160,000원</td><td class="num reward-amt">8,120원</td></tr>
+                <tr style="background:#F4F6FF; font-weight:700;"><td>합계</td><td class="num">12,450,000원</td><td class="num">450,000원</td><td class="num">12,000,000원</td><td class="num" style="color:#3355FF;">84,000원</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-foot">
+            <button class="modal-foot-btn" onclick="closeModal()">닫기</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
 </div>
+
+<script>
+function openModal(month) {
+  document.getElementById('modal-title').textContent = month + ' 리워드 상세내역';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+</script>
 </body>
 </html>
