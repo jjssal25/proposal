@@ -51,6 +51,12 @@
   .doc-field label { display: block; font-size: 12px; color: #6B7280; margin-bottom: 8px; }
   .doc-box { border: 1px dashed #D1D5DB; border-radius: 8px; height: 110px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #9CA3AF; }
   .file-chip { border: 1px solid #D1D5DB; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #374151; height: 110px; display: flex; align-items: center; }
+
+  .terms-header { display: flex; align-items: center; justify-content: space-between; }
+  .terms-view-btn { font-size: 12px; color: #3355FF; border: 1px solid #C7D2FE; border-radius: 6px; padding: 6px 12px; background: #FFFFFF; cursor: pointer; }
+  .terms-view-btn:hover { background: #EEF2FF; }
+  .terms-content { display: none; margin-top: 14px; border: 1px solid #E5E7EB; border-radius: 8px; padding: 16px 18px; background: #FAFBFC; font-size: 12px; color: #4B5563; line-height: 1.7; max-height: 160px; overflow-y: auto; }
+  .terms-content.open { display: block; }
 </style>
 </head>
 <body>
@@ -84,10 +90,20 @@
       <div class="page-sub">파트너스 이용약관 동의 현황과 계약 정보를 확인할 수 있습니다.</div>
 
       <div class="card" style="margin-bottom:24px;">
-        <div class="card-title">셀러허브 파트너스 이용약관</div>
+        <div class="card-title terms-header">
+          <span>셀러허브 파트너스 이용약관</span>
+        </div>
         <div class="agree-item">
           <div class="agree-left"><span class="check-icon">✓</span>셀러허브 파트너스 운영정책</div>
-          <span class="agree-status">동의하셨습니다</span>
+          <div style="display:flex; align-items:center; gap:14px;">
+            <span class="agree-status">동의하셨습니다</span>
+            <button class="terms-view-btn" onclick="toggleTerms()">약관 보기</button>
+          </div>
+        </div>
+        <div class="terms-content" id="terms-content">
+          제1조(목적) 이 약관은 ㈜셀러허브(이하 "회사")가 제공하는 셀러허브 파트너스 프로그램(이하 "서비스")의 이용 조건 및 절차, 회사와 파트너 간의 권리·의무 및 책임사항을 규정함을 목적으로 합니다.<br><br>
+          제2조(정의) "파트너"란 회사와 계약을 체결하고 하위 멤버(공급사)를 관리·운영하는 사업자를 말하며, "멤버"란 파트너에 소속되어 상품을 등록·판매하는 공급사를 말합니다.<br><br>
+          제3조(리워드 정산) 회사는 파트너에게 소속 멤버의 매출을 기준으로 산정된 리워드를 매월 정산하여 지급합니다. 세부 산정 기준은 리워드 정산내역 화면 및 별도 정책에 따릅니다.
         </div>
       </div>
 
@@ -95,11 +111,11 @@
         <div class="card">
           <div class="card-title">파트너 정보</div>
           <table class="info-table">
-            <tr><td class="info-label">고유 아이디</td><td class="info-value">2208160348</td></tr>
+            <tr><td class="info-label">아이디</td><td class="info-value">2208160348</td></tr>
             <tr><td class="info-label">대표자명</td><td class="info-value">홍길동<span class="lock-tag">수정 제한 · 고객센터 문의</span></td></tr>
-            <tr><td class="info-label">상호명</td><td class="info-value">㈜파트너스 1호점</td></tr>
-            <tr><td class="info-label">사업자등록번호</td><td class="info-value">123-45-67890<span class="lock-tag">수정 불가</span></td></tr>
-            <tr><td class="info-label">사업자 계좌</td><td class="info-value">국민은행 ****-1234<span class="lock-tag">수정 제한</span></td></tr>
+            <tr><td class="info-label">업체명</td><td class="info-value">㈜파트너스 1호점</td></tr>
+            <tr><td class="info-label">사업자 등록 번호</td><td class="info-value">123-45-67890<span class="lock-tag">수정 불가</span></td></tr>
+            <tr><td class="info-label">계좌번호</td><td class="info-value">국민은행 ****-1234<span class="lock-tag">수정 제한</span></td></tr>
             <tr><td class="info-label">휴대폰 번호</td><td class="info-value">010-****-5678<span class="lock-tag" style="color:#16834C;">인증완료</span></td></tr>
           </table>
         </div>
@@ -136,5 +152,11 @@
   </div>
 
 </div>
+
+<script>
+function toggleTerms() {
+  document.getElementById('terms-content').classList.toggle('open');
+}
+</script>
 </body>
 </html>
