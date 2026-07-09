@@ -27,16 +27,12 @@
   .page-sub { font-size: 13px; color: #9CA3AF; margin-bottom: 24px; }
 
   .filter-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; padding: 20px 24px; margin-bottom: 20px; }
-  .filter-row { display: flex; align-items: flex-end; gap: 24px; }
+  .filter-row { display: flex; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
   .filter-group label { display: block; font-size: 12px; color: #6B7280; margin-bottom: 6px; }
   .filter-group select, .filter-group input { height: 38px; border: 1px solid #D1D5DB; border-radius: 6px; padding: 0 12px; font-size: 13px; color: #111827; background: #FFFFFF; }
+  .period-range { display: flex; align-items: center; gap: 6px; }
   .search-btn { height: 38px; padding: 0 24px; background: #3355FF; color: #FFFFFF; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; margin-left: auto; }
-
-  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
-  .summary-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; padding: 20px 22px; }
-  .summary-label { font-size: 12px; color: #9CA3AF; margin-bottom: 8px; }
-  .summary-value { font-size: 22px; font-weight: 700; color: #111827; }
-  .summary-value.accent { color: #3355FF; }
+  .filter-hint { font-size: 12px; color: #9CA3AF; margin-top: 12px; }
 
   .table-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 10px; overflow: hidden; }
   .table-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid #F1F2F4; }
@@ -44,8 +40,8 @@
   .download-btn { font-size: 12px; color: #374151; border: 1px solid #D1D5DB; border-radius: 6px; padding: 7px 14px; background: #FFFFFF; }
 
   table { width: 100%; border-collapse: collapse; }
-  th { background: #F9FAFB; font-size: 12px; color: #6B7280; font-weight: 600; text-align: left; padding: 12px 22px; border-bottom: 1px solid #E5E7EB; }
-  td { font-size: 13px; color: #1F2937; padding: 14px 22px; border-bottom: 1px solid #F1F2F4; }
+  th { background: #F9FAFB; font-size: 12px; color: #6B7280; font-weight: 600; text-align: left; padding: 12px 16px; border-bottom: 1px solid #E5E7EB; }
+  td { font-size: 13px; color: #1F2937; padding: 14px 16px; border-bottom: 1px solid #F1F2F4; }
   tr:last-child td { border-bottom: none; }
   td.num { text-align: right; }
   th.num { text-align: right; }
@@ -62,6 +58,10 @@
   .detail-btn:hover { background: #EEF2FF; }
 
   .note { font-size: 12px; color: #9CA3AF; padding: 16px 24px; background: #FAFBFC; border-top: 1px solid #F1F2F4; }
+
+  .info-banner { background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; }
+  .info-banner-title { font-size: 13px; font-weight: 700; color: #3355FF; margin-bottom: 6px; }
+  .info-banner-text { font-size: 12.5px; color: #4B5563; line-height: 1.6; }
 
   /* modal */
   .modal-overlay {
@@ -133,61 +133,70 @@
 
     <div class="main" style="position:relative;">
       <div class="page-title">리워드 정산내역</div>
-      <div class="page-sub">멤버 매출을 기준으로 산정된 월별 리워드 내역과 지급 일정을 확인할 수 있습니다.</div>
+      <div class="page-sub">멤버 매출을 기준으로 산정된 리워드 내역과 지급 일정을 정산월 기준으로 확인할 수 있습니다.</div>
 
       <div class="filter-card">
         <div class="filter-row">
           <div class="filter-group">
             <label>멤버 선택</label>
-            <select style="width:200px;"><option>멤버 전체</option></select>
+            <select style="width:180px;">
+              <option>전체</option>
+              <option>㈜헬로키친</option>
+              <option>대성식품㈜</option>
+              <option>㈜미소상회</option>
+              <option>강남청과㈜</option>
+              <option>한빛유통㈜</option>
+            </select>
           </div>
           <div class="filter-group">
-            <label>조회 기간</label>
-            <input type="text" value="2026.01 ~ 2026.06" style="width:200px;">
+            <label>조회 기간 (정산월 기준)</label>
+            <div class="period-range">
+              <select id="sel-from-year" style="width:90px;"></select>
+              <span style="font-size:13px; color:#6B7280;">년</span>
+              <select id="sel-from-month" style="width:72px;"></select>
+              <span style="font-size:13px; color:#6B7280;">월</span>
+              <span style="color:#9CA3AF; margin:0 4px;">~</span>
+              <select id="sel-to-year" style="width:90px;"></select>
+              <span style="font-size:13px; color:#6B7280;">년</span>
+              <select id="sel-to-month" style="width:72px;"></select>
+              <span style="font-size:13px; color:#6B7280;">월</span>
+            </div>
           </div>
           <button class="search-btn">검색</button>
         </div>
+        <div class="filter-hint">※ 정산월(파트너에게 리워드를 정산하는 월) 기준으로 조회합니다. 기본 조회 기간은 최근 3개월입니다.</div>
       </div>
 
-      <div class="summary-grid">
-        <div class="summary-card">
-          <div class="summary-label">조회기간 등록 판매가 합계</div>
-          <div class="summary-value">38,250,000원</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">조회기간 정산 기준액</div>
-          <div class="summary-value">36,840,000원</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">조회기간 리워드 합계</div>
-          <div class="summary-value accent">257,880원</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">정산 예정 리워드</div>
-          <div class="summary-value accent">84,000원</div>
+      <div class="info-banner">
+        <div class="info-banner-title">💡 리워드는 이렇게 산정돼요</div>
+        <div class="info-banner-text">
+          매출 발생월의 상품판매총액에서 취소·반품 금액을 제외한 <b>정산 기준액</b>에 리워드율 <b>0.7%</b>를 적용하여 리워드 금액이 산정됩니다.
+          정산월은 매출 발생월의 <b>익익월</b>이며, 리워드는 정산월 <b>말일</b>에 지급됩니다.
         </div>
       </div>
 
       <div class="table-card">
         <div class="table-toolbar">
           <div class="result-count">전체 6건</div>
-          <button class="download-btn">⬇ 리스트 다운로드</button>
+          <button class="download-btn">⬇ 엑셀 다운로드</button>
         </div>
         <table>
           <thead>
             <tr>
-              <th style="width:12%;">매출 발생월</th>
-              <th class="num" style="width:16%;">등록 판매가 합계</th>
-              <th class="num" style="width:14%;">취소/반품액</th>
-              <th class="num" style="width:14%;">정산 기준액</th>
-              <th class="num" style="width:12%;">리워드 금액</th>
-              <th style="width:11%;">지급 예정일</th>
+              <th style="width:9%;">정산월</th>
+              <th style="width:9%;">매출 발생월</th>
+              <th class="num" style="width:14%;">상품판매<br>총액 합계</th>
+              <th class="num" style="width:12%;">취소/반품<br>총액</th>
+              <th class="num" style="width:13%;">정산 기준액</th>
+              <th class="num" style="width:11%;">리워드 금액</th>
+              <th style="width:10%;">지급 예정일</th>
               <th style="width:9%;">정산 상태</th>
-              <th style="width:12%;"></th>
+              <th style="width:13%;"></th>
             </tr>
           </thead>
           <tbody>
             <tr>
+              <td>2026.08</td>
               <td>2026.06</td>
               <td class="num">12,450,000원</td>
               <td class="num">450,000원</td>
@@ -198,6 +207,7 @@
               <td><button class="detail-btn" onclick="openModal('2026.06')">상세내역 보기</button></td>
             </tr>
             <tr>
+              <td>2026.07</td>
               <td>2026.05</td>
               <td class="num">9,820,000원</td>
               <td class="num">220,000원</td>
@@ -208,6 +218,7 @@
               <td><button class="detail-btn" onclick="openModal('2026.05')">상세내역 보기</button></td>
             </tr>
             <tr>
+              <td>2026.06</td>
               <td>2026.04</td>
               <td class="num">7,150,000원</td>
               <td class="num">180,000원</td>
@@ -218,6 +229,7 @@
               <td><button class="detail-btn" onclick="openModal('2026.04')">상세내역 보기</button></td>
             </tr>
             <tr>
+              <td>2026.05</td>
               <td>2026.03</td>
               <td class="num">5,430,000원</td>
               <td class="num">90,000원</td>
@@ -228,6 +240,7 @@
               <td><button class="detail-btn" onclick="openModal('2026.03')">상세내역 보기</button></td>
             </tr>
             <tr>
+              <td>2026.04</td>
               <td>2026.02</td>
               <td class="num">2,100,000원</td>
               <td class="num">40,000원</td>
@@ -238,6 +251,7 @@
               <td><button class="detail-btn" onclick="openModal('2026.02')">상세내역 보기</button></td>
             </tr>
             <tr>
+              <td>2026.03</td>
               <td>2026.01</td>
               <td class="num">1,300,000원</td>
               <td class="num">0원</td>
@@ -249,7 +263,6 @@
             </tr>
           </tbody>
         </table>
-        <div class="note">※ 리워드 = 정산 기준액(취소/반품 반영) × 리워드율(0.7%). 해당월 매출은 공급사 정산 완료 후(M+1월 초) 안내되며, 세금계산서 발급 익월 말일에 지급됩니다.</div>
       </div>
 
       <!-- 상세내역 모달 -->
@@ -257,8 +270,8 @@
         <div class="modal-box">
           <div class="modal-header">
             <div>
-              <div class="modal-title" id="modal-title">2026.06 리워드 상세내역</div>
-              <div class="modal-sub">멤버(공급사)별 정산 기준액과 리워드 산정 내역입니다.</div>
+              <div class="modal-title" id="modal-title">2026.07 리워드 상세내역</div>
+              <div class="modal-sub" id="modal-sub">멤버(공급사)별 등록판매가·취소/반품액·정산 기준액과 리워드 산정 내역입니다.</div>
             </div>
             <button class="modal-close" onclick="closeModal()">✕</button>
           </div>
@@ -271,19 +284,13 @@
               <thead>
                 <tr>
                   <th style="width:24%;">공급사명</th>
-                  <th class="num" style="width:19%;">등록 판매가</th>
+                  <th class="num" style="width:19%;">등록판매가</th>
                   <th class="num" style="width:19%;">취소/반품액</th>
                   <th class="num" style="width:19%;">정산 기준액</th>
                   <th class="num" style="width:19%;">리워드 금액</th>
                 </tr>
               </thead>
               <tbody id="modal-table-body">
-                <tr><td>㈜헬로키친</td><td class="num">4,820,000원</td><td class="num">210,000원</td><td class="num">4,610,000원</td><td class="num reward-amt">32,270원</td></tr>
-                <tr><td>대성식품㈜</td><td class="num">2,950,000원</td><td class="num">95,000원</td><td class="num">2,855,000원</td><td class="num reward-amt">19,985원</td></tr>
-                <tr><td>㈜미소상회</td><td class="num">1,830,000원</td><td class="num">60,000원</td><td class="num">1,770,000원</td><td class="num reward-amt">12,390원</td></tr>
-                <tr><td>강남청과㈜</td><td class="num">1,650,000원</td><td class="num">45,000원</td><td class="num">1,605,000원</td><td class="num reward-amt">11,235원</td></tr>
-                <tr><td>한빛유통㈜</td><td class="num">1,200,000원</td><td class="num">40,000원</td><td class="num">1,160,000원</td><td class="num reward-amt">8,120원</td></tr>
-                <tr style="background:#F4F6FF; font-weight:700;"><td>합계</td><td class="num">12,450,000원</td><td class="num">450,000원</td><td class="num">12,000,000원</td><td class="num" style="color:#3355FF;">84,000원</td></tr>
               </tbody>
             </table>
           </div>
@@ -299,13 +306,114 @@
 </div>
 
 <script>
-function openModal(month) {
-  document.getElementById('modal-title').textContent = month + ' 리워드 상세내역';
+// 매출발생월 -> 정산월(익익월) 매핑
+const SETTLE_MONTH = {
+  '2026.01': '2026.03', '2026.02': '2026.04', '2026.03': '2026.05',
+  '2026.04': '2026.06', '2026.05': '2026.07', '2026.06': '2026.08',
+};
+
+// 매출발생월별 공급사 상세내역 (등록판매가, 취소/반품액, 정산기준액, 리워드금액)
+const DETAIL = {
+  '2026.06': [
+    ['㈜헬로키친', 4820000, 210000, 4610000, 32270],
+    ['대성식품㈜', 2950000, 95000, 2855000, 19985],
+    ['㈜미소상회', 1830000, 60000, 1770000, 12390],
+    ['강남청과㈜', 1650000, 45000, 1605000, 11235],
+    ['한빛유통㈜', 1200000, 40000, 1160000, 8120],
+  ],
+  '2026.05': [
+    ['㈜헬로키친', 3800000, 85000, 3715000, 26005],
+    ['대성식품㈜', 2330000, 52000, 2278000, 15946],
+    ['㈜미소상회', 1440000, 32000, 1408000, 9856],
+    ['강남청과㈜', 1300000, 29000, 1271000, 8897],
+    ['한빛유통㈜', 950000, 22000, 928000, 6496],
+  ],
+  '2026.04': [
+    ['㈜헬로키친', 2770000, 70000, 2700000, 18900],
+    ['대성식품㈜', 1690000, 40000, 1650000, 11550],
+    ['㈜미소상회', 1050000, 30000, 1020000, 7140],
+    ['강남청과㈜', 950000, 20000, 930000, 6510],
+    ['한빛유통㈜', 690000, 20000, 670000, 4690],
+  ],
+  '2026.03': [
+    ['㈜헬로키친', 2100000, 35000, 2065000, 14455],
+    ['대성식품㈜', 1290000, 25000, 1265000, 8855],
+    ['㈜미소상회', 800000, 15000, 785000, 5495],
+    ['강남청과㈜', 720000, 10000, 710000, 4970],
+    ['한빛유통㈜', 520000, 5000, 515000, 3605],
+  ],
+  '2026.02': [
+    ['㈜헬로키친', 820000, 16000, 804000, 5628],
+    ['대성식품㈜', 500000, 10000, 490000, 3430],
+    ['㈜미소상회', 310000, 6000, 304000, 2128],
+    ['강남청과㈜', 280000, 5000, 275000, 1925],
+    ['한빛유통㈜', 190000, 3000, 187000, 1309],
+  ],
+  '2026.01': [
+    ['㈜헬로키친', 500000, 0, 500000, 3500],
+    ['대성식품㈜', 320000, 0, 320000, 2240],
+    ['㈜미소상회', 200000, 0, 200000, 1400],
+    ['강남청과㈜', 180000, 0, 180000, 1260],
+    ['한빛유통㈜', 100000, 0, 100000, 700],
+  ],
+};
+
+function won(n) { return n.toLocaleString('ko-KR') + '원'; }
+
+function openModal(salesMonth) {
+  const settleMonth = SETTLE_MONTH[salesMonth];
+  document.getElementById('modal-title').textContent = settleMonth + ' 리워드 상세내역 (매출발생월 ' + salesMonth + ')';
+
+  const rows = DETAIL[salesMonth] || [];
+  const body = document.getElementById('modal-table-body');
+  body.innerHTML = '';
+  let sumA = 0, sumB = 0, sumBase = 0, sumReward = 0;
+  rows.forEach(function(row) {
+    var name = row[0], a = row[1], b = row[2], base = row[3], reward = row[4];
+    sumA += a; sumB += b; sumBase += base; sumReward += reward;
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + name + '</td><td class="num">' + won(a) + '</td><td class="num">' + won(b) + '</td><td class="num">' + won(base) + '</td><td class="num reward-amt">' + won(reward) + '</td>';
+    body.appendChild(tr);
+  });
+  var totalTr = document.createElement('tr');
+  totalTr.style.background = '#F4F6FF';
+  totalTr.style.fontWeight = '700';
+  totalTr.innerHTML = '<td>합계</td><td class="num">' + won(sumA) + '</td><td class="num">' + won(sumB) + '</td><td class="num">' + won(sumBase) + '</td><td class="num" style="color:#3355FF;">' + won(sumReward) + '</td>';
+  body.appendChild(totalTr);
+
+  document.getElementById('modal-count').textContent = rows.length;
   document.getElementById('modal-overlay').classList.add('open');
 }
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
 }
+
+// 조회 기간(정산월) select 채우기 — 기본값: 최근 3개월
+(function() {
+  const settleMonths = Object.values(SETTLE_MONTH);
+  const latest = settleMonths[settleMonths.length - 1];
+  const parts = latest.split('.');
+  const latestY = parseInt(parts[0]), latestM = parseInt(parts[1]);
+  let fromY = latestY, fromM = latestM - 2;
+  if (fromM <= 0) { fromM += 12; fromY -= 1; }
+
+  function fillSelects(yearSel, monthSel, defY, defM) {
+    for (let y = latestY - 1; y <= latestY; y++) {
+      const opt = document.createElement('option');
+      opt.value = y; opt.textContent = y;
+      if (y === defY) opt.selected = true;
+      yearSel.appendChild(opt);
+    }
+    for (let m = 1; m <= 12; m++) {
+      const opt = document.createElement('option');
+      opt.value = m; opt.textContent = String(m).padStart(2, '0');
+      if (m === defM) opt.selected = true;
+      monthSel.appendChild(opt);
+    }
+  }
+  fillSelects(document.getElementById('sel-from-year'), document.getElementById('sel-from-month'), fromY, fromM);
+  fillSelects(document.getElementById('sel-to-year'), document.getElementById('sel-to-month'), latestY, latestM);
+})();
 </script>
 </body>
 </html>
