@@ -111,11 +111,11 @@
           <div class="filter-group">
             <label>&nbsp;</label>
             <div class="quick-range">
-              <button class="quick-btn" onclick="setLastMonth()">지난달</button>
-              <button class="quick-btn selected" id="btn-thismonth" onclick="setThisMonth()">이번달</button>
+              <button class="quick-btn" id="btn-lastmonth" onclick="setLastMonth()">지난달</button>
+              <button class="quick-btn" id="btn-thismonth" onclick="setThisMonth()">이번달</button>
             </div>
           </div>
-          <button class="reset-btn" onclick="setThisMonth()">초기화</button>
+          <button class="reset-btn" onclick="setLastMonth()">초기화</button>
           <button class="search-btn">검색</button>
         </div>
         <div class="filter-hint">※ 실시간 기준의 조회 데이터로, 최종 정산 시 정산기준액과는 차이가 발생할 수 있습니다.</div>
@@ -129,14 +129,14 @@
         <table>
           <thead>
             <tr>
-              <th style="width:20%;">멤버명(공급사)</th>
-              <th class="num" style="width:11%;">주문건수</th>
-              <th class="num" style="width:11%;">주문수량</th>
+              <th style="width:18%;">멤버명(공급사)</th>
+              <th class="num" style="width:10%;">주문건수</th>
+              <th class="num" style="width:10%;">주문수량</th>
               <th class="num" style="width:15%;">상품판매총액</th>
-              <th class="num" style="width:11%;">취소건수</th>
-              <th class="num" style="width:11%;">취소수량</th>
-              <th class="num" style="width:13%;">상품취소총액</th>
-              <th class="num" style="width:13%;">총계</th>
+              <th class="num" style="width:11%;">취소/반품 건수</th>
+              <th class="num" style="width:11%;">취소/반품 수량</th>
+              <th class="num" style="width:13%;">취소/반품 총액</th>
+              <th class="num" style="width:12%;">순거래액(총액)</th>
             </tr>
           </thead>
           <tbody>
@@ -148,7 +148,6 @@
             <tr class="total-row"><td>합계</td><td class="num">157</td><td class="num">197</td><td class="num">7,712,170원</td><td class="num">43</td><td class="num">47</td><td class="num">1,807,250원</td><td class="num">5,904,920원</td></tr>
           </tbody>
         </table>
-        <div class="note">※ 상품판매총액·상품취소총액은 배송비를 제외한 등록 판매가 기준입니다. 총계 = 상품판매총액 − 상품취소총액.</div>
       </div>
     </div>
   </div>
@@ -189,11 +188,12 @@
   function updateQuickBtn() {
     const y = parseInt(selYear.value);
     const m = parseInt(selMonth.value);
-    const btn = document.getElementById('btn-thismonth');
-    btn.classList.toggle('selected', y === curYear && m === curMonth);
+    document.getElementById('btn-thismonth').classList.toggle('selected', y === curYear && m === curMonth);
+    document.getElementById('btn-lastmonth').classList.toggle('selected', y === prevYear && m === prevMonth);
   }
   selYear.addEventListener('change', updateQuickBtn);
   selMonth.addEventListener('change', updateQuickBtn);
+  updateQuickBtn();
 })();
 
 function setThisMonth() {
@@ -201,6 +201,7 @@ function setThisMonth() {
   document.getElementById('sel-year').value = now.getFullYear();
   document.getElementById('sel-month').value = now.getMonth() + 1;
   document.getElementById('btn-thismonth').classList.add('selected');
+  document.getElementById('btn-lastmonth').classList.remove('selected');
 }
 
 function setLastMonth() {
@@ -208,6 +209,7 @@ function setLastMonth() {
   const d = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   document.getElementById('sel-year').value = d.getFullYear();
   document.getElementById('sel-month').value = d.getMonth() + 1;
+  document.getElementById('btn-lastmonth').classList.add('selected');
   document.getElementById('btn-thismonth').classList.remove('selected');
 }
 </script>
