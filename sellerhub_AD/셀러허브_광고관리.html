@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>셀러허브 광고 관리 - 프로토타입 v4</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "Malgun Gothic", Dotum, Arial, sans-serif;
+    background:#eef0f3; color:#333; font-size:13px;
+  }
+  .app { display:flex; height:100vh; }
+  .sidebar { width:220px; background:#fff; border-right:1px solid #ddd; display:flex; flex-direction:column; }
+  .sidebar-header { background:#1b2440; color:#fff; padding:14px 16px; }
+  .sidebar-header .name { font-size:16px; font-weight:bold; }
+  .sidebar-header .sub { font-size:10px; color:#aab3cc; margin-top:2px; }
+  .menu-title { background:#eef1fb; border:1px solid #3f4fd6; color:#1b2440; font-weight:bold; font-size:12.5px; padding:8px 10px; margin:10px 10px 0; }
+  .menu-box { border:1px solid #3f4fd6; margin:0 10px 14px; }
+  .menu-item { padding:9px 12px; font-size:12.5px; cursor:pointer; border-bottom:1px solid #eee; color:#333; }
+  .menu-item:last-child { border-bottom:none; }
+  .menu-item:hover { background:#f5f7ff; }
+  .menu-item.active { background:#e8ecff; font-weight:bold; color:#2233aa; }
+  .menu-item .dash { color:#999; margin-right:4px; }
+  .sidebar-note { margin:auto 10px 14px; font-size:11px; color:#999; line-height:1.5; border-top:1px dashed #ddd; padding-top:10px; }
+  .main { flex:1; overflow-y:auto; padding:22px 26px; }
+  .page { display:none; }
+  .page.active { display:block; }
+
+  .page-title { font-size:16px; font-weight:bold; color:#222; margin:0 0 16px; display:flex; align-items:center; gap:6px; }
+  .page-title .tri { color:#2233d0; font-size:13px; }
+  .badge-merge { font-size:10px; background:#2f9e6a; color:#fff; padding:2px 6px; border-radius:3px; font-weight:bold; margin-left:6px; vertical-align:middle; }
+  .search-box { background:#fff; border:1px solid #ddd; padding:14px 16px; margin-bottom:14px; }
+  .search-row { display:flex; align-items:center; padding:7px 0; border-bottom:1px solid #f0f0f0; gap:10px; flex-wrap:wrap; }
+  .search-row:last-child { border-bottom:none; }
+  .search-label { width:90px; flex-shrink:0; font-weight:bold; color:#555; font-size:12.5px; }
+  .search-row input[type=date], .search-row input[type=text], .search-row select {
+    border:1px solid #ccc; padding:5px 7px; font-size:12.5px; border-radius:2px;
+  }
+  .quickbtn { border:1px solid #ccc; background:#fafafa; padding:5px 10px; font-size:12px; cursor:pointer; border-radius:2px; color:#555; }
+  .quickbtn:hover { background:#eee; }
+  .quickbtn.on { background:#4a4de0; color:#fff; border-color:#4a4de0; }
+  .radio-group label, .check-group label { margin-right:14px; font-size:12.5px; color:#444; cursor:pointer; }
+  .btn { display:inline-block; padding:7px 16px; font-size:12.5px; border-radius:3px; border:1px solid transparent; cursor:pointer; font-weight:bold; }
+  .btn-primary { background:#4a4de0; color:#fff; }
+  .btn-primary:hover { background:#3739c9; }
+  .btn-outline { background:#fff; color:#666; border-color:#ccc; }
+  .btn-outline:hover { background:#f2f2f2; }
+  .btn-edit { background:#4fc3d9; color:#fff; padding:4px 9px; font-size:11px; border:none; border-radius:3px; cursor:pointer; }
+  .btn-del { background:#e05a5a; color:#fff; padding:4px 9px; font-size:11px; border:none; border-radius:3px; cursor:pointer; }
+  .btn-report { background:#8a5cf7; color:#fff; padding:4px 9px; font-size:11px; border:none; border-radius:3px; cursor:pointer; }
+  .btn-register { background:#1a56db; color:#fff; padding:8px 18px; }
+  .center { text-align:center; }
+  .toolbar { display:flex; justify-content:space-between; align-items:center; margin:16px 0 10px; }
+  .result-count { color:#4a4de0; font-size:12.5px; }
+  .result-count b { color:#e05a5a; }
+  .btn-group { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; }
+
+  table { width:100%; border-collapse:collapse; background:#fff; }
+  thead th { background:#f5f6f9; border-top:1px solid #ddd; border-bottom:1px solid #ddd; padding:9px 6px; font-size:12px; color:#444; text-align:center; font-weight:bold; }
+  tbody td { border-bottom:1px solid #eee; padding:9px 6px; font-size:12px; text-align:center; color:#333; }
+  tbody tr:hover { background:#fafbff; }
+  .td-title { text-align:left; }
+  .thumb { width:44px; height:28px; border-radius:2px; object-fit:cover; border:1px solid #eee; display:inline-block; }
+  .slot-pill { display:inline-block; padding:3px 8px; border-radius:10px; font-size:10.5px; font-weight:bold; background:#eef0fb; color:#3a3fbf; white-space:nowrap; }
+  .status-pill { display:inline-block; padding:3px 9px; border-radius:10px; font-size:11px; font-weight:bold; }
+  .st-live { background:#e6f0ff; color:#1a56db; }
+  .st-end  { background:#eee; color:#888; }
+  .ctr-high { color:#1e7d34; font-weight:bold; }
+
+  .summary-cards { display:flex; gap:14px; margin-bottom:16px; }
+  .card { flex:1; background:#fff; border:1px solid #e2e2e2; border-radius:4px; padding:16px 18px; }
+  .card .label { font-size:12px; color:#888; margin-bottom:6px; }
+  .card .value { font-size:22px; font-weight:bold; color:#222; }
+  .card .value span { font-size:13px; color:#4a4de0; margin-left:4px; }
+
+  .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); align-items:center; justify-content:center; z-index:100; }
+  .overlay.show { display:flex; }
+  .modal { background:#fff; width:720px; max-height:88vh; overflow-y:auto; border-radius:4px; padding:22px 26px 26px; }
+  .modal-title { font-size:15px; font-weight:bold; color:#222; margin-bottom:16px; display:flex; align-items:center; gap:6px; border-bottom:1px solid #eee; padding-bottom:12px; }
+  .form-row { display:flex; border-bottom:1px solid #f2f2f2; padding:11px 0; align-items:flex-start; }
+  .form-row.slot-select-row { background:#f7f8ff; margin:-22px -26px 8px; padding:14px 26px; border-bottom:1px solid #dfe2ff; }
+  .form-label { width:120px; flex-shrink:0; font-weight:bold; color:#8a3b3b; font-size:12.5px; padding-top:6px; }
+  .slot-select-row .form-label { color:#2233aa; padding-top:8px; }
+  .form-field { flex:1; }
+  .form-field input[type=text], .form-field input[type=date], .form-field select, .form-field textarea {
+    width:100%; border:1px solid #ccc; padding:7px 9px; font-size:12.5px; border-radius:2px; font-family:inherit;
+  }
+  .form-hint { font-size:11px; color:#999; margin-top:4px; }
+  .form-inline { display:flex; align-items:center; gap:8px; }
+  .form-inline input[type=date] { flex:1; }
+  .file-row { display:flex; gap:8px; flex-wrap:wrap; }
+  .file-row input { flex:1; }
+  .fake-file-btn { border:1px solid #ccc; background:#f5f5f5; padding:7px 12px; font-size:12px; border-radius:2px; white-space:nowrap; }
+  .modal-actions { margin-top:18px; display:flex; gap:8px; justify-content:flex-end; }
+  .fake-editor { border:1px solid #ccc; border-radius:2px; }
+  .fake-editor-toolbar { background:#f7f7f7; border-bottom:1px solid #ddd; padding:6px 8px; font-size:11px; color:#999; }
+  .fake-editor-body { padding:12px; min-height:80px; font-size:12.5px; color:#555; }
+  .type-only { display:none; }
+  .type-only.show { display:flex; }
+
+  .report-wrap { background:#5c6066; padding:26px; overflow-y:auto; max-height:92vh; }
+  .report-toolbar { max-width:720px; margin:0 auto 14px; display:flex; justify-content:flex-end; gap:8px; }
+  .report-page { background:#fff; width:720px; margin:0 auto; padding:42px 46px; box-shadow:0 0 16px rgba(0,0,0,.35); font-size:12px; color:#222; min-height:900px; }
+  .report-title { font-size:19px; font-weight:bold; text-align:center; margin-bottom:4px; }
+  .report-date { text-align:right; font-size:11.5px; color:#555; margin-bottom:18px; }
+  .report-h2 { font-weight:bold; font-size:13px; margin:18px 0 8px; }
+  .report-meta { width:100%; border-collapse:collapse; margin-bottom:6px; }
+  .report-meta td { border:1px solid #ccc; padding:8px 10px; font-size:12px; }
+  .report-meta td.k { background:#f4f4f4; font-weight:bold; width:150px; }
+  .perf-table { width:100%; border-collapse:collapse; font-size:11.5px; }
+  .perf-table th { background:#eef0f5; border:1px solid #ccc; padding:7px 5px; }
+  .perf-table td { border:1px solid #ccc; padding:7px 5px; text-align:center; }
+  .perf-table td.left { text-align:left; }
+  .report-note { margin-top:20px; font-size:11px; color:#555; border:1px solid #ddd; padding:10px 12px; }
+  .report-brand { text-align:right; margin-top:26px; font-size:11px; color:#999; }
+  @media print {
+    body * { visibility:hidden; }
+    #reportModal, #reportModal * { visibility:visible; }
+    #reportModal { position:fixed; inset:0; background:#fff; }
+    .report-wrap { background:#fff; padding:0; }
+    .report-toolbar { display:none; }
+    .report-page { box-shadow:none; margin:0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ================= 좌측 메뉴 ================= -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="name">SCM(공급사)</div>
+      <div class="sub">SCM ADMIN</div>
+    </div>
+    <div class="menu-title">셀러허브 광고 관리</div>
+    <div class="menu-box" id="menuBox">
+      <div class="menu-item active" data-page="p1"><span class="dash">*</span>배너관리</div>
+      <div class="menu-item" data-page="p2"><span class="dash">*</span>홈페이지 새소식 관리</div>
+    </div>
+    <div class="sidebar-note">
+      ※ 배너관리는 홈페이지 상단배너 / 셀러어드민 블록배너 / 셀러어드민 하단배너 3개 지면을 통합 관리하며,<br>
+      소재별 노출수·클릭수·클릭률과 리포트 발급까지 한 화면에서 처리합니다.
+    </div>
+  </div>
+
+  <!-- ================= 우측 컨텐츠 ================= -->
+  <div class="main">
+
+    <!-- ========== 1. 배너관리 (통합 + 실적) ========== -->
+    <div class="page active" id="p1">
+      <div class="page-title"><span class="tri">▶</span> 배너관리 <span class="badge-merge">지면·실적 통합</span></div>
+
+      <div class="search-box">
+        <div class="search-row">
+          <div class="search-label">지면 선택</div>
+          <select id="filterSlot" onchange="filterBannerList()">
+            <option value="all">전체</option>
+            <option value="top">홈페이지 상단 배너</option>
+            <option value="block">셀러어드민 블록배너</option>
+            <option value="bottom">셀러어드민 하단배너</option>
+          </select>
+        </div>
+        <div class="search-row">
+          <div class="search-label">게시기간</div>
+          <input type="date"><span>-</span><input type="date">
+          <button class="quickbtn">이번달</button><button class="quickbtn">지난달</button>
+          <button class="quickbtn on">전체</button>
+        </div>
+        <div class="search-row">
+          <div class="search-label">키워드검색</div>
+          <select><option>통합검색</option><option>소재명</option><option>광고주명</option></select>
+          <input type="text" style="width:220px" placeholder="검색어 입력">
+        </div>
+        <div class="center" style="margin-top:12px;">
+          <button class="btn btn-outline">초기화</button>
+          <button class="btn btn-primary">검색</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="result-count">검색 <b id="bannerCount">6</b>개 (선택 <b id="selCount">0</b>건)</div>
+        <div class="btn-group">
+          <button class="btn btn-outline" onclick="excelDownload()">엑셀 다운로드</button>
+          <button class="btn btn-outline" onclick="showReport('bulk')">리포트 발급</button>
+          <button class="btn btn-register" onclick="openBannerModal()">배너 등록</button>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr>
+          <th style="width:30px"><input type="checkbox" id="perfAll" onclick="toggleAll(this)"></th>
+          <th style="width:38px">번호</th>
+          <th style="width:100px">지면</th>
+          <th style="width:56px">썸네일</th>
+          <th style="width:130px">소재명</th>
+          <th style="width:80px">광고주</th>
+          <th style="width:150px">게시기간</th>
+          <th style="width:46px">순서</th>
+          <th style="width:64px">노출수</th>
+          <th style="width:56px">클릭수</th>
+          <th style="width:56px">클릭률</th>
+          <th style="width:150px">관리</th>
+        </tr></thead>
+        <tbody id="bannerBody">
+          <!-- JS로 렌더링됨 -->
+        </tbody>
+      </table>
+      <div class="form-hint" style="margin-top:8px;">
+        ※ [배너 등록] 시 지면을 먼저 선택하면 해당 지면에 맞는 입력 항목만 표시됩니다.<br>
+        ※ 좌측 체크박스로 선택한 항목만 [엑셀 다운로드]/[리포트 발급]에 포함됩니다. (선택 없으면 전체 기준)<br>
+        ※ [리포트] 버튼 클릭 시 A4 인쇄 미리보기로 노출수/클릭수/클릭률 리포트가 표시됩니다.
+      </div>
+    </div>
+
+    <!-- ========== 2. 홈페이지 새소식 관리 ========== -->
+    <div class="page" id="p2">
+      <div class="page-title"><span class="tri">▶</span> 새 소식 관리</div>
+
+      <div class="search-box">
+        <div class="search-row">
+          <div class="search-label">등록일</div>
+          <input type="date"><span>-</span><input type="date">
+          <button class="quickbtn">오늘</button><button class="quickbtn">어제</button>
+          <button class="quickbtn">일주일</button><button class="quickbtn">15일</button>
+          <button class="quickbtn">이번달</button><button class="quickbtn">지난달</button>
+          <button class="quickbtn">한달</button><button class="quickbtn">두달</button>
+          <button class="quickbtn on">전체</button>
+        </div>
+        <div class="search-row">
+          <div class="search-label">키워드 검색</div>
+          <select><option>통합검색</option><option>제목</option><option>소재명</option><option>광고주명</option></select>
+          <input type="text" style="width:220px">
+        </div>
+        <div class="search-row">
+          <div class="search-label">상세 유형</div>
+          <div class="radio-group">
+            <label><input type="radio" name="type2" checked> 전체</label>
+            <label><input type="radio" name="type2"> 서비스 소식</label>
+            <label><input type="radio" name="type2"> 이벤트</label>
+            <label><input type="radio" name="type2"> 광고</label>
+          </div>
+        </div>
+        <div class="search-row">
+          <div class="search-label">상태</div>
+          <div class="radio-group">
+            <label><input type="radio" name="stat2" checked> 전체</label>
+            <label><input type="radio" name="stat2"> 진행전</label>
+            <label><input type="radio" name="stat2"> 진행중</label>
+            <label><input type="radio" name="stat2"> 마감</label>
+            <label><input type="radio" name="stat2"> 상시</label>
+          </div>
+        </div>
+        <div class="center" style="margin-top:12px;">
+          <button class="btn btn-outline">초기화</button>
+          <button class="btn btn-primary">검색</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="result-count">검색 <b>196</b>개, 1 of 20 Pages</div>
+        <button class="btn btn-register" onclick="openModal('m2')">게시글 등록</button>
+      </div>
+
+      <table>
+        <thead><tr>
+          <th style="width:34px"><input type="checkbox"></th>
+          <th style="width:46px">번호</th>
+          <th>제목</th>
+          <th style="width:140px">소재명</th>
+          <th style="width:90px">광고주</th>
+          <th style="width:74px">상단 우선<br>노출</th>
+          <th style="width:56px">상태</th>
+          <th style="width:110px">시작일</th>
+          <th style="width:110px">종료일</th>
+          <th style="width:66px">수정</th>
+          <th style="width:66px">삭제</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><input type="checkbox"></td><td>196</td>
+            <td class="td-title" onclick="openModal('m2')">신규 연동 제휴몰 안내</td>
+            <td>-</td><td>-</td>
+            <td><input type="checkbox" disabled></td><td><span class="status-pill st-end">종료</span></td>
+            <td>2024-07-30</td><td>2024-07-31</td>
+            <td><button class="btn-edit" onclick="openModal('m2')">수정</button></td>
+            <td><button class="btn-del">삭제</button></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td><td>195</td>
+            <td class="td-title" onclick="openModal('m2')">재고 관리 솔루션 박스히어로, 1개월 무료 체험하세요!</td>
+            <td>박스히어로_새소식_0229</td><td>박스히어로</td>
+            <td><input type="checkbox" disabled></td><td><span class="status-pill st-end">종료</span></td>
+            <td>2024-02-29</td><td>2024-03-31</td>
+            <td><button class="btn-edit" onclick="openModal('m2')">수정</button></td>
+            <td><button class="btn-del">삭제</button></td>
+          </tr>
+          <tr>
+            <td><input type="checkbox"></td><td>194</td>
+            <td class="td-title" onclick="openModal('m2')">식스샵 프로 50% 할인혜택 받고 나만의 쇼핑몰을 만드세요!</td>
+            <td>식스샵_새소식_0801</td><td>식스샵</td>
+            <td><input type="checkbox" checked disabled></td><td><span class="status-pill st-live">진행중</span></td>
+            <td>2024-08-01</td><td>2024-12-31</td>
+            <td><button class="btn-edit" onclick="openModal('m2')">수정</button></td>
+            <td><button class="btn-del">삭제</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= 모달: 배너 등록/수정 (통합) ================= -->
+<div class="overlay" id="bannerModal">
+  <div class="modal">
+    <div class="modal-title" id="bannerModalTitle"><span class="tri" style="color:#2233d0">▶</span> 배너 등록</div>
+
+    <div class="form-row slot-select-row">
+      <div class="form-label">지면 선택</div>
+      <div class="form-field">
+        <select id="slotSelect" onchange="onSlotChange()">
+          <option value="top">홈페이지 상단 배너</option>
+          <option value="block">셀러어드민 블록배너</option>
+          <option value="bottom">셀러어드민 하단배너</option>
+        </select>
+        <div class="form-hint" id="slotHint">이미지 위에 제목/소제목 텍스트가 얹혀지는 지면입니다.</div>
+      </div>
+    </div>
+
+    <!-- 홈페이지 상단 배너 전용 -->
+    <div class="form-row type-only" data-type="top">
+      <div class="form-label">제목</div>
+      <div class="form-field"><input type="text" id="f-title" placeholder="예: 위탁판매 필수 도매몰, 온채널">
+        <div class="form-hint">띄어쓰기를 포함하여 16~22자로 작성해주세요.</div></div>
+    </div>
+    <div class="form-row type-only" data-type="top">
+      <div class="form-label">소제목</div>
+      <div class="form-field"><input type="text" id="f-subtitle" placeholder="예: 내 매출의 최대 10% 지급해드려요!">
+        <div class="form-hint">띄어쓰기를 포함하여 23자 내로 작성해주세요.</div></div>
+    </div>
+
+    <!-- 공통 필드 -->
+    <div class="form-row">
+      <div class="form-label">광고 소재명</div>
+      <div class="form-field"><input type="text" id="f-creative" placeholder="예: 온채널_상단배너_0318">
+        <div class="form-hint">내부 관리용 소재 식별명 (리스트/리포트에 표시됩니다)</div></div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">광고주명</div>
+      <div class="form-field"><input type="text" id="f-advertiser"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">배너 이미지</div>
+      <div class="form-field file-row">
+        <div class="fake-file-btn">파일 선택</div><input type="text" id="f-image" placeholder="이미지 URL 표시">
+        <div class="form-hint" id="imageHint" style="width:100%;"></div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">랜딩 링크</div>
+      <div class="form-field"><input type="text" id="f-link" placeholder="https://"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">노출 기간</div>
+      <div class="form-field form-inline">
+        <input type="date" id="f-start"><span>-</span><input type="date" id="f-end">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">노출 여부</div>
+      <div class="form-field radio-group">
+        <label><input type="radio" name="live" value="Y" checked> Y</label>
+        <label><input type="radio" name="live" value="N"> N</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">노출 순서</div>
+      <div class="form-field">
+        <select id="f-order"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+        <div class="form-hint" id="orderHint">블록배너/하단배너는 롤링 노출 순서, 상단 배너는 단독 노출입니다.</div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('bannerModal')">취소</button>
+      <button class="btn btn-primary" id="bannerSubmitBtn">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 모달: 새소식 등록/수정 ================= -->
+<div class="overlay" id="m2">
+  <div class="modal">
+    <div class="modal-title"><span class="tri" style="color:#2233d0">▶</span> 새 소식 관리</div>
+    <div class="form-row">
+      <div class="form-label">제목</div>
+      <div class="form-field"><input type="text" value="신규 연동 제휴몰 안내"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">광고 소재명</div>
+      <div class="form-field"><input type="text" placeholder="예: 박스히어로_새소식_0229">
+        <div class="form-hint">내부 관리용 소재 식별명 (내부 소식인 경우 비워두세요)</div></div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">광고주명</div>
+      <div class="form-field"><input type="text" placeholder="내부 소식인 경우 비워두세요"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">이벤트 유형</div>
+      <div class="form-field radio-group">
+        <label><input type="radio" name="etype" checked> 서비스 소식</label>
+        <label><input type="radio" name="etype"> 이벤트</label>
+        <label><input type="radio" name="etype"> 광고</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">페이지 타입</div>
+      <div class="form-field radio-group">
+        <label><input type="radio" name="ptype" checked> 일반형</label>
+        <label><input type="radio" name="ptype"> 와이드형</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">썸네일 이미지 등록</div>
+      <div class="form-field file-row">
+        <div class="fake-file-btn">파일 선택</div><input type="text" value="https://i.sellerhub.sho...">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">노출기간</div>
+      <div class="form-field form-inline">
+        <input type="date" value="2024-07-30"><span>~</span><input type="date" value="2024-07-31">
+        <label style="white-space:nowrap; margin-left:8px;"><input type="checkbox"> 상시 노출</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-label">내용</div>
+      <div class="form-field fake-editor">
+        <div class="fake-editor-toolbar">B / I / 링크 / 이미지 / 표 삽입 (에디터 영역 - 실제 구현 시 WYSIWYG 적용)</div>
+        <div class="fake-editor-body">토스 공동구매 신규 채널 OPEN 관련 상세 안내 콘텐츠가 여기에 표시됩니다.</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('m2')">취소</button>
+      <button class="btn btn-primary">수정</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 리포트 인쇄 미리보기 ================= -->
+<div class="overlay" id="reportModal">
+  <div class="report-wrap">
+    <div class="report-toolbar">
+      <button class="btn btn-outline" onclick="closeModal('reportModal')">닫기</button>
+      <button class="btn btn-primary" onclick="window.print()">인쇄 / PDF 저장</button>
+    </div>
+    <div class="report-page" id="reportBody"><!-- JS로 채워짐 --></div>
+  </div>
+</div>
+
+<script>
+  /* ---- 메뉴 전환 ---- */
+  document.querySelectorAll('.menu-item').forEach(function(item){
+    item.addEventListener('click', function(){
+      document.querySelectorAll('.menu-item').forEach(function(i){ i.classList.remove('active'); });
+      document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+      item.classList.add('active');
+      document.getElementById(item.dataset.page).classList.add('active');
+    });
+  });
+  function openModal(id){ document.getElementById(id).classList.add('show'); }
+  function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+  document.querySelectorAll('.overlay').forEach(function(ov){
+    ov.addEventListener('click', function(e){ if(e.target === ov) ov.classList.remove('show'); });
+  });
+
+  /* ---- 통합 배너 데이터 (지면정보 + 소재정보 + 실적데이터) ---- */
+  var slotLabel = { top:'홈페이지 상단 배너', block:'셀러어드민 블록배너', bottom:'셀러어드민 하단배너' };
+  var thumbColor = { b6:'#4a6cf7', b5:'#7c5cff', b4:'#ff8a5c', b3:'#3ec6c6', b2:'#1fa06b', b1:'#e0a83c' };
+
+  var bannerData = {
+    b6:{ no:6, slot:'top',    creative:'온채널_상단배너_0318',       advertiser:'온채널',        start:'2024-03-18', end:'2026-07-01', order:'1',
+         title:'위탁판매 필수 도매몰, 온채널', subtitle:'내 매출의 최대 10% 지급해드려요!', imp:72140, click:1205 },
+    b5:{ no:5, slot:'top',    creative:'박스히어로_무료체험_0229',   advertiser:'박스히어로',    start:'2024-02-29', end:'2024-03-31', order:'2',
+         title:'재고관리가 쉬워진다, 박스히어로', subtitle:'', imp:9680, click:87 },
+    b4:{ no:4, slot:'block',  creative:'리빙웨이브_블록_0801',       advertiser:'리빙웨이브',    start:'2026-08-01', end:'2026-08-31', order:'1', imp:41220, click:702 },
+    b3:{ no:3, slot:'block',  creative:'코스메틱플러스_블록_0805',   advertiser:'코스메틱플러스',start:'2026-08-05', end:'2026-09-05', order:'2', imp:18530, click:245 },
+    b2:{ no:2, slot:'bottom', creative:'온채널_하단배너_0318',       advertiser:'온채널',        start:'2024-03-18', end:'2026-07-01', order:'1', imp:58910, click:980 },
+    b1:{ no:1, slot:'bottom', creative:'그린푸드_하단배너_0710',     advertiser:'그린푸드',      start:'2026-07-10', end:'2026-08-10', order:'2', imp:13205, click:151 }
+  };
+
+  function ctr(imp, click){ return imp ? (click / imp * 100).toFixed(2) : '0.00'; }
+
+  function renderBannerTable(){
+    var order = ['b6','b5','b4','b3','b2','b1'];
+    var body = document.getElementById('bannerBody');
+    body.innerHTML = order.map(function(id){
+      var d = bannerData[id];
+      var c = ctr(d.imp, d.click);
+      var ctrClass = parseFloat(c) >= 1.5 ? 'ctr-high' : '';
+      return '<tr data-slot="'+ d.slot +'" data-id="'+ id +'">' +
+        '<td><input type="checkbox" class="perfChk" onclick="updateSelCount()"></td>' +
+        '<td>'+ d.no +'</td>' +
+        '<td><span class="slot-pill">'+ slotLabel[d.slot] +'</span></td>' +
+        '<td><div class="thumb" style="background:'+ thumbColor[id] +'"></div></td>' +
+        '<td class="td-title">'+ d.creative +'</td>' +
+        '<td>'+ d.advertiser +'</td>' +
+        '<td>'+ d.start +' ~ '+ d.end +'</td>' +
+        '<td>'+ d.order +'</td>' +
+        '<td>'+ d.imp.toLocaleString() +'</td>' +
+        '<td>'+ d.click.toLocaleString() +'</td>' +
+        '<td class="'+ ctrClass +'">'+ c +'%</td>' +
+        '<td><div class="btn-group">' +
+          '<button class="btn-edit" onclick="openBannerModal(\''+ id +'\')">수정</button>' +
+          '<button class="btn-report" onclick="showReport(\''+ id +'\')">리포트</button>' +
+          '<button class="btn-del">삭제</button>' +
+        '</div></td>' +
+      '</tr>';
+    }).join('');
+    filterBannerList();
+  }
+
+  /* ---- 지면 필터 ---- */
+  function filterBannerList(){
+    var v = document.getElementById('filterSlot').value;
+    var rows = document.querySelectorAll('#bannerBody tr');
+    var cnt = 0;
+    rows.forEach(function(r){
+      var show = (v === 'all') || (r.dataset.slot === v);
+      r.style.display = show ? '' : 'none';
+      if(show) cnt++;
+    });
+    document.getElementById('bannerCount').textContent = cnt;
+  }
+
+  /* ---- 배너 등록/수정 모달: 지면별 동적 필드 ---- */
+  var slotMeta = {
+    top:    { hint:'이미지 위에 제목/소제목 텍스트가 얹혀지는 지면입니다.',
+              imageHint:'권장 사이즈: 홈페이지 상단 띠 배너 규격 (와이드형)', orderHint:'상단 배너는 단독 노출되며, 순서는 대기열 순번입니다.' },
+    block:  { hint:'대시보드 우측 블록 영역에 이미지 그대로 노출됩니다. (텍스트 오버레이 없음)',
+              imageHint:'권장 사이즈: 대시보드 우측 블록 규격 (카드형)', orderHint:'여러 소재가 롤링(순환) 노출되는 순서입니다.' },
+    bottom: { hint:'대시보드 최하단 영역에 이미지 그대로 노출됩니다. (텍스트 오버레이 없음)',
+              imageHint:'권장 사이즈: 대시보드 하단 롤링 배너 규격 (와이드형)', orderHint:'여러 소재가 롤링(순환) 노출되는 순서입니다.' }
+  };
+
+  function onSlotChange(){
+    var v = document.getElementById('slotSelect').value;
+    document.querySelectorAll('.type-only').forEach(function(el){
+      el.classList.toggle('show', el.dataset.type === v);
+    });
+    document.getElementById('slotHint').textContent = slotMeta[v].hint;
+    document.getElementById('imageHint').textContent = slotMeta[v].imageHint;
+    document.getElementById('orderHint').textContent = slotMeta[v].orderHint;
+  }
+
+  function openBannerModal(id){
+    var d = id ? bannerData[id] : null;
+    document.getElementById('bannerModalTitle').innerHTML = '<span class="tri" style="color:#2233d0">▶</span> ' + (d ? '배너 수정' : '배너 등록');
+    document.getElementById('bannerSubmitBtn').textContent = d ? '수정' : '등록';
+
+    var slot = d ? d.slot : 'top';
+    document.getElementById('slotSelect').value = slot;
+    onSlotChange();
+
+    document.getElementById('f-title').value = d && d.title ? d.title : '';
+    document.getElementById('f-subtitle').value = d && d.subtitle ? d.subtitle : '';
+    document.getElementById('f-creative').value = d ? d.creative : '';
+    document.getElementById('f-advertiser').value = d ? d.advertiser : '';
+    document.getElementById('f-image').value = d ? 'https://i.sellerhub.sho...' : '';
+    document.getElementById('f-link').value = d ? 'https://example.com' : '';
+    document.getElementById('f-start').value = d ? d.start : '';
+    document.getElementById('f-end').value = d ? d.end : '';
+    document.getElementById('f-order').value = d ? d.order : '1';
+
+    openModal('bannerModal');
+  }
+
+  /* ---- 체크박스 선택 ---- */
+  function toggleAll(src){
+    document.querySelectorAll('.perfChk').forEach(function(c){ c.checked = src.checked; });
+    updateSelCount();
+  }
+  function updateSelCount(){
+    var n = document.querySelectorAll('.perfChk:checked').length;
+    document.getElementById('selCount').textContent = n;
+  }
+  function getSelectedIds(){
+    return Array.from(document.querySelectorAll('.perfChk:checked'))
+      .map(function(c){ return c.closest('tr').dataset.id; });
+  }
+  function excelDownload(){
+    var ids = getSelectedIds();
+    if(ids.length === 0){ alert('엑셀 다운로드는 전체 ' + Object.keys(bannerData).length + '건 기준으로 진행됩니다.'); }
+    else { alert('선택한 ' + ids.length + '건을 엑셀로 다운로드합니다. (프로토타입 - 실제 다운로드 없음)'); }
+  }
+
+  /* ---- 리포트 인쇄 미리보기 ---- */
+  function showReport(target){
+    var ids;
+    if(target === 'bulk'){
+      ids = getSelectedIds();
+      if(ids.length === 0){ ids = Object.keys(bannerData); }
+    } else {
+      ids = [target];
+    }
+
+    var rows = ids.map(function(id){ return Object.assign({id:id}, bannerData[id]); });
+
+    var advertisers = Array.from(new Set(rows.map(function(r){ return r.advertiser; })));
+    var companyLabel = advertisers.length === 1 ? advertisers[0] : advertisers.join(' / ');
+
+    var starts = rows.map(function(r){ return r.start; }).sort();
+    var ends = rows.map(function(r){ return r.end; }).sort();
+    var totalPeriod = starts[0] + ' ~ ' + ends[ends.length-1];
+
+    var todayStr = new Date().toISOString().slice(0,10).replace(/-/g,'.');
+
+    var tableRows = rows.map(function(r, idx){
+      return '<tr>' +
+        '<td>'+ (idx+1) +'</td>' +
+        '<td class="left">'+ slotLabel[r.slot] +'</td>' +
+        '<td class="left">'+ r.creative +'</td>' +
+        '<td>'+ r.start +' ~ '+ r.end +'</td>' +
+        '<td>'+ r.imp.toLocaleString() +'</td>' +
+        '<td>'+ r.click.toLocaleString() +'</td>' +
+        '<td>-</td>' +
+      '</tr>';
+    }).join('');
+
+    document.getElementById('reportBody').innerHTML =
+      '<div class="report-title">셀러허브 광고 캠페인 리포트</div>' +
+      '<div class="report-date">발행일 '+ todayStr +'</div>' +
+      '<div class="report-h2">◈ 광고 개요</div>' +
+      '<table class="report-meta">' +
+        '<tr><td class="k">광고주</td><td>'+ companyLabel +'</td></tr>' +
+        '<tr><td class="k">총 광고 기간</td><td>'+ totalPeriod +'</td></tr>' +
+        '<tr><td class="k">광고 유형</td><td>배너</td></tr>' +
+      '</table>' +
+      '<div class="report-h2">◈ 광고 성과</div>' +
+      '<table class="perf-table">' +
+        '<thead><tr>' +
+          '<th style="width:32px">순번</th><th>지면(광고구좌)</th><th>소재명</th>' +
+          '<th style="width:140px">광고 기간</th>' +
+          '<th style="width:76px">노출 수</th><th style="width:68px">클릭 수</th><th style="width:72px">참고사항</th>' +
+        '</tr></thead>' +
+        '<tbody>'+ tableRows +'</tbody>' +
+      '</table>' +
+      '<div class="report-note">' +
+        '1. 노출 수/클릭 수는 소재별 트래킹 로그 기준으로 집계된 값입니다.' +
+      '</div>' +
+      '<div class="report-brand">셀러허브 광고 서비스</div>';
+
+    openModal('reportModal');
+  }
+
+  renderBannerTable();
+  onSlotChange();
+</script>
+</body>
+</html>
