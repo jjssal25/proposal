@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>제휴몰 배송트래킹 설정</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#222;
+  --ink-sub:#555;
+  --line:#c9c9c9;
+  --line-soft:#e3e3e3;
+  --head:#1b1b1b;
+  --slate:#4b5666;
+  --slate-ink:#2f3a49;
+  --th:#e9edf2;
+  --blue:#0b5cc9;
+  --off:#6b7280;
+  --warn-bg:#fff8e1;
+  --warn-ink:#8a5a00;
+  --err-bg:#fdecea;
+  --err:#c0261b;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif;color:var(--ink);background:#fff;font-size:13px}
+button,input{font-family:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid #1f6feb;outline-offset:2px}
+
+/* 상단 */
+.gnb{background:var(--head);display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px;padding:0 24px;min-height:72px}
+.brand{display:flex;align-items:center;gap:12px;padding:12px 0;color:#fff;font-size:22px;font-weight:700}
+.gnb nav{display:flex;flex-wrap:wrap;gap:4px;font-size:14px}
+.gnb nav span{padding:10px 16px;color:#d6d6d6}
+.gnb nav span.on{color:#fff;font-weight:700;border-bottom:3px solid #fff}
+.crumb{background:#ececec;border-bottom:1px solid #d4d4d4;padding:12px 24px;color:var(--ink-sub);display:flex;flex-wrap:wrap;gap:8px 16px}
+.crumb b{color:var(--ink)}
+
+/* 레이아웃 */
+.layout{display:flex;flex-wrap:wrap;align-items:flex-start}
+.side{flex:0 0 220px;width:220px;max-width:100%;padding:20px 12px;background:#f6f6f6;border-right:1px solid #d4d4d4;min-height:calc(100vh - 120px)}
+.side h3{margin:0;background:var(--slate);color:#fff;font-size:14px;padding:8px 12px;border-radius:3px;display:flex;justify-content:space-between;align-items:center}
+.side h3 i{width:16px;height:16px;background:#4c9be8;border-radius:2px;display:inline-flex;align-items:center;justify-content:center}
+.side ul{list-style:none;margin:0;padding:14px 4px 6px;display:flex;flex-direction:column;gap:12px;color:#333}
+.side li.cur{display:flex;align-items:center;gap:8px;background:#fff3f0;border:2px solid #d92d20;border-radius:3px;padding:8px;margin:0 -4px;color:#1f4f99;font-weight:700}
+.side li.cur em{font-style:normal;background:#d92d20;color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:8px;white-space:nowrap}
+.side h3.second{margin-top:18px}
+.main{flex:999 1 560px;min-width:0;padding:28px 32px 80px}
+.title{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.title i{width:20px;height:20px;background:#1f6feb;border-radius:3px;display:inline-flex;align-items:center;justify-content:center}
+h1{margin:0;font-size:20px}
+.lead{margin:0 0 20px;color:var(--ink-sub);line-height:1.6}
+
+/* 요약 바 */
+.summary{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;border:1px solid #d4d4d4;background:#fafafa;padding:14px 16px;margin-bottom:16px}
+.counts{display:flex;flex-wrap:wrap;gap:8px 20px}
+.counts .c-on{color:var(--blue)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.btn{min-height:44px;padding:0 16px;border:1px solid #9aa3af;background:#fff;border-radius:3px;font-size:13px;color:var(--ink)}
+.btn:hover{background:#f3f5f8}
+.btn-primary{border:0;background:var(--blue);color:#fff;font-weight:700;padding:0 20px}
+.btn-primary:hover{background:#0a4fae}
+.btn-line{border-color:var(--slate);color:var(--slate-ink)}
+
+/* 테이블 */
+.table-wrap{overflow-x:auto;border:1px solid var(--line)}
+.row{display:grid;grid-template-columns:1.4fr .6fr 1.1fr 1.1fr 1.4fr .9fr;align-items:center;min-width:860px;border-bottom:1px solid var(--line-soft)}
+.row:last-child{border-bottom:0}
+.row.head{background:var(--th);font-weight:700;border-bottom:1px solid var(--line)}
+.row.changed{background:var(--warn-bg)}
+.cell{padding:6px 16px}
+.head .cell{padding:12px 16px}
+.cell.name{font-weight:500}
+.cell.code{color:var(--ink-sub)}
+.cell.meta{color:var(--ink)}
+.cell.meta.none{color:#767676}
+.changed .cell.meta{color:var(--warn-ink)}
+.sw-cell{display:flex;align-items:center;gap:10px}
+.sw{width:52px;height:44px;border:0;background:transparent;padding:0;display:inline-flex;align-items:center}
+.track{display:block;width:44px;height:24px;border-radius:12px;position:relative;background:var(--off)}
+.knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:10px;background:#fff}
+.sw[aria-checked="true"] .track{background:var(--blue)}
+.sw[aria-checked="true"] .knob{left:22px}
+.state{font-weight:700;width:28px;color:var(--ink-sub)}
+.state.is-on{color:var(--blue)}
+
+/* 저장 바 */
+.savebar{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;justify-content:space-between;margin-top:16px;padding:14px 16px;border:1px solid var(--line);background:#f4f7fb}
+.savebar .actions .btn-primary{padding:0 24px;font-size:14px}
+.toast{margin-top:12px;padding:10px 14px;background:#e8f3ea;border:1px solid #2e7d32;color:#1b5e20;border-radius:3px}
+.toast[hidden]{display:none}
+
+/* 모달 */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20;display:flex;justify-content:center;align-items:flex-start;padding:min(14vh,140px) 16px 24px;overflow:auto}
+.overlay[hidden]{display:none}
+.modal{width:100%;background:#fff;border-radius:4px;box-shadow:0 12px 40px rgba(0,0,0,.35);overflow:hidden}
+.modal.w-log{max-width:640px}
+.modal.w-add{max-width:520px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--slate);color:#fff;padding:14px 20px}
+.modal-head h2{margin:0;font-size:17px}
+.x{width:44px;height:44px;border:0;background:transparent;color:#fff;font-size:22px;line-height:1}
+.log-meta{padding:18px 20px 8px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline;justify-content:space-between}
+.log-meta strong{font-size:15px}
+.log-meta strong span{font-weight:400;color:var(--ink-sub)}
+.log-body{padding:0 20px 8px}
+.log-box{border:1px solid var(--line);max-height:340px;overflow:auto}
+.lrow{display:grid;grid-template-columns:1.4fr 1.4fr 1fr;min-width:520px;border-bottom:1px solid var(--line-soft)}
+.lrow:last-child{border-bottom:0}
+.lrow.head{background:var(--th);font-weight:700;border-bottom:1px solid var(--line)}
+.lrow div{padding:10px 14px}
+.empty{padding:28px 14px;text-align:center;color:var(--ink-sub);line-height:1.7}
+.note{margin:8px 0 0;font-size:12px;color:var(--ink-sub)}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px 18px}
+.form{padding:20px;display:flex;flex-direction:column;gap:18px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label,.field .lbl{font-weight:700}
+.req{color:var(--err)}
+.field input[type=text]{min-height:44px;padding:0 12px;border:1px solid #9aa3af;border-radius:3px;font-size:14px;width:100%}
+.hint{font-size:12px;color:var(--ink-sub)}
+.err{background:var(--err-bg);border:1px solid var(--err);color:#8f1a11;padding:10px 12px;border-radius:3px}
+.err[hidden]{display:none}
+.info{background:#f4f7fb;border:1px solid #d4d4d4;padding:10px 12px;border-radius:3px;color:#444;line-height:1.6}
+.add-sw{display:flex;align-items:center;gap:10px}
+
+@media (max-width:760px){
+  .side{flex:1 1 100%;width:100%;min-height:0;border-right:0;border-bottom:1px solid #d4d4d4}
+  .main{padding:20px 16px 60px}
+}
+</style>
+</head>
+<body>
+
+<header class="gnb">
+  <div class="brand">
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect width="40" height="40" rx="8" fill="#fff"/><path d="M12 24c0-5 16-3 16-8M28 16c0 5-16 3-16 8" stroke="#1b1b1b" stroke-width="3" stroke-linecap="round"/></svg>
+    셀러허브
+  </div>
+  <nav aria-label="상단 메뉴">
+    <span>기본관리</span><span>공급사관리</span><span class="on">제휴몰관리</span><span>상품</span><span>주문</span><span>회원</span><span>게시판</span><span>프로모션</span><span>통계/데이터</span>
+  </nav>
+</header>
+
+<div class="crumb">
+  <span>HOME &gt; 제휴몰관리 &gt; 제휴몰 관리 &gt; <b>제휴몰 배송트래킹 설정</b></span>
+  <span>(admin_01님 로그인하셨습니다.)</span>
+</div>
+
+<div class="layout">
+  <aside class="side" aria-label="좌측 메뉴">
+    <h3>제휴몰 관리 <i aria-hidden="true"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 5h8" stroke="#fff" stroke-width="2"/></svg></i></h3>
+    <ul>
+      <li>제휴몰 노출 관리</li>
+      <li>수수료 관리</li>
+      <li class="cur" aria-current="page">제휴몰 배송트래킹 설정 <em>NEW</em></li>
+    </ul>
+    <h3 class="second">미사용 메뉴 <i aria-hidden="true"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 5h8" stroke="#fff" stroke-width="2"/></svg></i></h3>
+    <ul>
+      <li>플랜별 제휴몰 관리</li>
+      <li>제휴몰 계정 관리</li>
+      <li>제휴몰 이슈 처리</li>
+      <li>제휴몰 계정 등록</li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="title">
+      <i aria-hidden="true"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M3 1l5 4-5 4z" fill="#fff"/></svg></i>
+      <h1>제휴몰 배송트래킹 설정</h1>
+    </div>
+    <p class="lead">Delivery Tracker(배송 추적)를 적용할 제휴몰을 제휴몰별로 켜고 끌 수 있습니다. 기본값은 ON이며, 값을 변경하면 변경자 ID와 변경 일시가 이력으로 남습니다. 각 행의 [로그보기]에서 과거 변경내역 전체를 확인할 수 있습니다.</p>
+
+    <div class="summary">
+      <div class="counts">
+        <span>전체 <b id="cTotal">0</b>개</span>
+        <span>ON <b class="c-on" id="cOn">0</b>개</span>
+        <span>OFF <b id="cOff">0</b>개</span>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn" id="btnAllOn">전체 ON</button>
+        <button type="button" class="btn" id="btnAllOff">전체 OFF</button>
+        <button type="button" class="btn btn-primary" id="btnOpenAdd">+ 제휴몰 추가</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="row head" role="row">
+        <div class="cell">제휴몰명</div>
+        <div class="cell">코드</div>
+        <div class="cell">Delivery Tracker</div>
+        <div class="cell">최종 변경자 ID</div>
+        <div class="cell">최종 변경 일시</div>
+        <div class="cell">변경내역</div>
+      </div>
+      <div id="rows"></div>
+    </div>
+
+    <div class="savebar">
+      <span>변경된 항목 <b id="cChanged">0</b>건 · 저장 시 변경자 ID와 변경 일시가 이력에 기록됩니다.</span>
+      <div class="actions">
+        <button type="button" class="btn" id="btnReset" style="font-size:14px;padding:0 20px">되돌리기</button>
+        <button type="button" class="btn btn-primary" id="btnSave">저장</button>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status" hidden></div>
+  </main>
+</div>
+
+<!-- 모달: 변경내역 -->
+<div class="overlay" id="logOverlay" hidden>
+  <div class="modal w-log" role="dialog" aria-modal="true" aria-labelledby="logTitle">
+    <div class="modal-head">
+      <h2 id="logTitle">변경내역</h2>
+      <button type="button" class="x" data-close aria-label="닫기">×</button>
+    </div>
+    <div class="log-meta">
+      <strong><span id="logName"></span> <span id="logCode"></span></strong>
+      <span>현재 <b id="logState"></b> · 총 <b id="logCount"></b>건 (최신순)</span>
+    </div>
+    <div class="log-body">
+      <div class="log-box">
+        <div class="lrow head"><div>변경 일시</div><div>변경 내용</div><div>변경자 ID</div></div>
+        <div id="logRows"></div>
+        <div class="empty" id="logEmpty" hidden>변경 이력이 없습니다.<br>기본값(ON)으로 사용 중입니다.</div>
+      </div>
+      <p class="note">※ 화면 예시용 더미 데이터입니다.</p>
+    </div>
+    <div class="modal-foot"><button type="button" class="btn" data-close style="font-size:14px;padding:0 28px">닫기</button></div>
+  </div>
+</div>
+
+<!-- 모달: 제휴몰 추가 -->
+<div class="overlay" id="addOverlay" hidden>
+  <div class="modal w-add" role="dialog" aria-modal="true" aria-labelledby="addTitle">
+    <div class="modal-head">
+      <h2 id="addTitle">제휴몰 추가</h2>
+      <button type="button" class="x" data-close aria-label="닫기">×</button>
+    </div>
+    <div class="form">
+      <div class="field">
+        <label for="fName">제휴몰명 <span class="req">*</span></label>
+        <input id="fName" type="text" placeholder="예: 신규몰" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="fCode">제휴몰 코드 <span class="req">*</span></label>
+        <input id="fCode" type="text" placeholder="예: NM (영문 대문자/숫자, 중복 불가)" autocomplete="off">
+        <span class="hint">저장 후에는 코드를 수정할 수 없습니다.</span>
+      </div>
+      <div class="field">
+        <span class="lbl" id="fOnLbl">Delivery Tracker 사용 여부</span>
+        <div class="add-sw">
+          <button type="button" class="sw" id="fOn" role="switch" aria-checked="true" aria-labelledby="fOnLbl"><span class="track"><span class="knob"></span></span></button>
+          <span class="state is-on" id="fOnText">ON</span>
+          <span class="hint">(기본값 ON)</span>
+        </div>
+      </div>
+      <div class="err" id="addErr" role="alert" hidden></div>
+      <div class="info">저장하면 등록자 ID와 등록 일시가 변경내역에 "신규 등록"으로 기록됩니다.</div>
+    </div>
+    <div class="modal-foot" style="padding-top:0;padding-bottom:20px">
+      <button type="button" class="btn" data-close style="font-size:14px;padding:0 24px">취소</button>
+      <button type="button" class="btn btn-primary" id="btnSaveAdd" style="font-size:14px;padding:0 28px">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var CURRENT_USER = 'admin_01'; // 더미 로그인 ID
+
+  // 화면 예시용 더미 데이터. logs: 최신순 [일시, 이전, 이후, 변경자 ID]
+  var seed = [
+    ['하프클럽','HC'],['보리보리','HC2'],['롯데아이몰','LI'],['GS','GS'],['H몰','HM'],['알리','AL'],
+    ['스마트스코어','SC'],['신세계TV','SS'],['LG라이프케어','LC'],['패션플러스','FP'],['CJ오쇼핑','CJ'],
+    ['SK스토아','SK'],['KT알파쇼핑','KA'],['쇼핑엔티','SN'],['W쇼핑','WS'],['SSG','SG'],['홈앤쇼핑','HS'],
+    ['베네피아','BP'],['지마켓','EG'],['옥션','EA'],['11번가','ST'],['롯데온','LO'],['쿠팡','CG'],
+    ['스마트스토어','NS'],['퀸잇','QN'],['토스쇼핑','TS']
+  ];
+  var seedLogs = {
+    CG: [['2026-10-05 14:32:08','ON','OFF','sh_admin01'],['2026-09-25 11:20:45','OFF','ON','sh_admin01'],['2026-09-20 16:03:12','ON','OFF','sh_admin02']],
+    QN: [['2026-10-04 10:05:41','ON','OFF','sh_admin02'],['2026-10-02 17:48:20','OFF','ON','sh_admin01'],['2026-09-28 09:41:57','ON','OFF','sh_admin03']],
+    TS: [['2026-09-30 09:12:03','ON','OFF','sh_admin03']]
+  };
+
+  var malls = seed.map(function (m) {
+    var logs = (seedLogs[m[1]] || []).map(function (l) { return { at: l[0], content: l[1] + ' → ' + l[2], by: l[3] }; });
+    var on = !(logs.length && seedLogs[m[1]][0][2] === 'OFF');
+    return { name: m[0], code: m[1], on: on, pending: on, logs: logs };
+  });
+
+  var $ = function (id) { return document.getElementById(id); };
+  var rowsEl = $('rows');
+  var lastFocus = null;
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function now() {
+    var d = new Date();
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function render() {
+    rowsEl.textContent = '';
+    var onCount = 0, changed = 0;
+    malls.forEach(function (m) {
+      if (m.pending) onCount++;
+      var isChanged = m.pending !== m.on;
+      if (isChanged) changed++;
+      var last = m.logs[0];
+
+      var row = el('div', 'row' + (isChanged ? ' changed' : ''));
+      row.setAttribute('role', 'row');
+      row.appendChild(el('div', 'cell name', m.name));
+      row.appendChild(el('div', 'cell code', m.code));
+
+      var swCell = el('div', 'cell sw-cell');
+      var sw = el('button', 'sw');
+      sw.type = 'button';
+      sw.setAttribute('role', 'switch');
+      sw.setAttribute('aria-checked', m.pending ? 'true' : 'false');
+      sw.setAttribute('aria-label', m.name + ' Delivery Tracker ' + (m.pending ? 'ON' : 'OFF'));
+      sw.innerHTML = '<span class="track"><span class="knob"></span></span>';
+      sw.addEventListener('click', function () { m.pending = !m.pending; render(); });
+      swCell.appendChild(sw);
+      swCell.appendChild(el('span', 'state' + (m.pending ? ' is-on' : ''), m.pending ? 'ON' : 'OFF'));
+      row.appendChild(swCell);
+
+      var by = isChanged ? '(저장 시 기록)' : (last ? last.by : '-');
+      var at = isChanged ? '(저장 시 기록)' : (last ? last.at : '-');
+      var none = !isChanged && !last ? ' none' : '';
+      row.appendChild(el('div', 'cell meta' + none, by));
+      row.appendChild(el('div', 'cell meta' + none, at));
+
+      var logCell = el('div', 'cell');
+      var logBtn = el('button', 'btn btn-line', '로그보기');
+      logBtn.type = 'button';
+      logBtn.setAttribute('aria-label', m.name + ' 변경내역 보기');
+      logBtn.addEventListener('click', function () { openLog(m, logBtn); });
+      logCell.appendChild(logBtn);
+      row.appendChild(logCell);
+
+      rowsEl.appendChild(row);
+    });
+    $('cTotal').textContent = malls.length;
+    $('cOn').textContent = onCount;
+    $('cOff').textContent = malls.length - onCount;
+    $('cChanged').textContent = changed;
+  }
+
+  /* 모달 공통 */
+  function openOverlay(ov, trigger, focusEl) {
+    lastFocus = trigger || document.activeElement;
+    ov.hidden = false;
+    (focusEl || ov.querySelector('button')).focus();
+  }
+  function closeOverlays() {
+    $('logOverlay').hidden = true;
+    $('addOverlay').hidden = true;
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  document.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', closeOverlays); });
+  ['logOverlay', 'addOverlay'].forEach(function (id) {
+    $(id).addEventListener('mousedown', function (e) { if (e.target === this) closeOverlays(); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && (!$('logOverlay').hidden || !$('addOverlay').hidden)) closeOverlays();
+  });
+
+  /* 변경내역 모달 */
+  function openLog(m, trigger) {
+    $('logName').textContent = m.name;
+    $('logCode').textContent = '(' + m.code + ')';
+    $('logState').textContent = m.pending ? 'ON' : 'OFF';
+    $('logCount').textContent = m.logs.length;
+    var box = $('logRows');
+    box.textContent = '';
+    m.logs.forEach(function (l) {
+      var r = el('div', 'lrow');
+      r.appendChild(el('div', '', l.at));
+      r.appendChild(el('div', '', l.content));
+      r.appendChild(el('div', '', l.by));
+      box.appendChild(r);
+    });
+    $('logEmpty').hidden = m.logs.length > 0;
+    openOverlay($('logOverlay'), trigger, $('logOverlay').querySelector('.x'));
+  }
+
+  /* 일괄 / 되돌리기 / 저장 */
+  $('btnAllOn').addEventListener('click', function () { malls.forEach(function (m) { m.pending = true; }); render(); });
+  $('btnAllOff').addEventListener('click', function () { malls.forEach(function (m) { m.pending = false; }); render(); });
+  $('btnReset').addEventListener('click', function () { malls.forEach(function (m) { m.pending = m.on; }); $('toast').hidden = true; render(); });
+  $('btnSave').addEventListener('click', function () {
+    var stamp = now(), n = 0;
+    malls.forEach(function (m) {
+      if (m.pending !== m.on) {
+        m.logs.unshift({ at: stamp, content: (m.on ? 'ON' : 'OFF') + ' → ' + (m.pending ? 'ON' : 'OFF'), by: CURRENT_USER });
+        m.on = m.pending;
+        n++;
+      }
+    });
+    var t = $('toast');
+    t.textContent = n ? n + '건의 변경사항을 저장했습니다. (시안: 실제 저장은 되지 않습니다.)' : '저장할 변경사항이 없습니다.';
+    t.hidden = false;
+    render();
+  });
+
+  /* 제휴몰 추가 모달 */
+  var fOn = true;
+  function paintAddSwitch() {
+    $('fOn').setAttribute('aria-checked', fOn ? 'true' : 'false');
+    var t = $('fOnText');
+    t.textContent = fOn ? 'ON' : 'OFF';
+    t.className = 'state' + (fOn ? ' is-on' : '');
+  }
+  $('fOn').addEventListener('click', function () { fOn = !fOn; paintAddSwitch(); });
+  $('btnOpenAdd').addEventListener('click', function () {
+    $('fName').value = '';
+    $('fCode').value = '';
+    $('addErr').hidden = true;
+    fOn = true;
+    paintAddSwitch();
+    openOverlay($('addOverlay'), this, $('fName'));
+  });
+  function showErr(msg) { var e = $('addErr'); e.textContent = msg; e.hidden = false; }
+  $('btnSaveAdd').addEventListener('click', function () {
+    var name = $('fName').value.trim();
+    var code = $('fCode').value.trim().toUpperCase();
+    if (!name) return showErr('제휴몰명을 입력해 주세요.');
+    if (!code) return showErr('제휴몰 코드를 입력해 주세요.');
+    if (!/^[A-Z0-9]+$/.test(code)) return showErr('제휴몰 코드는 영문 대문자와 숫자만 사용할 수 있습니다.');
+    if (malls.some(function (m) { return m.code === code; })) return showErr('이미 등록된 제휴몰 코드입니다.');
+    malls.push({
+      name: name, code: code, on: fOn, pending: fOn,
+      logs: [{ at: now(), content: '신규 등록 (' + (fOn ? 'ON' : 'OFF') + ')', by: CURRENT_USER }]
+    });
+    closeOverlays();
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
